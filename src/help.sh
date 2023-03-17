@@ -2,7 +2,6 @@
 
 print_version () {
 	printf "pharo-cli - A Pharo Images Manager [version 0.8]\n"
-}
 
 print_basic_help () {
 	program_name="pharo"
@@ -33,7 +32,7 @@ The options include:
 	open [vm_arguments]         Lists all pharo images present in the images folder.
                                 Supports fuzzy search and navigation.
                                 It sends to the vm all the arguments if they were specified.\n
-                                
+
 	duplicate                   Duplicates an image and renames it.
 
                                 If name not specified adds an incremental number at the end.
@@ -45,8 +44,4 @@ pharo-cli project home page: https://github.com/jordanmontt/pharo-cli
 Developed by jordanmontt
 This software is licensed under the MIT License.
 EOF
-}
-
-examples () {
-	echo "$(<${BASH_SOURCE%/*}/../EXAMPLES)"
 }

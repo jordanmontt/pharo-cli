@@ -1,7 +1,4 @@
 #!/bin/bash
-#
-# pi - Pharo Install - A MIT-pip-like library for Pharo Smalltalk
-#
 
 source "${BASH_SOURCE%/*}"/image-manager.sh
 source "${BASH_SOURCE%/*}"/../src/help.sh
