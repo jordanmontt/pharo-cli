@@ -9,7 +9,9 @@ default_pharo_version=11
 
 ### Private functions
 
+###### HERE TO CHANGE YOUR IMAGE FOLDER
 _go_to_pharo_images_folder_() {
+    # override this path with your own pharo imaages path 
     cd ~/Documents/Pharo/images/
 }
 

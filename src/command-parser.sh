@@ -4,6 +4,7 @@
 #
 
 source "${BASH_SOURCE%/*}"/image-manager.sh
+source "${BASH_SOURCE%/*}"/../src/help.sh
 
 parse_command () {
 	case "$1" in
@@ -23,7 +24,7 @@ parse_command () {
             # not yet implemented
 			exit 0
 			;;
-        help ) h
+        help | h )
 			print_help
 			exit 0
             ;;
