@@ -4,13 +4,13 @@
 
 ### Variables
 
-pharo_images_location='~/Documents/Pharo/images'
+pharo_images_location="~/Documents/Pharo/images/"
 default_pharo_version=11
 
 ### Private functions
 
 _go_to_pharo_images_folder_() {
-    cd $pharo_images_location
+    cd ~/Documents/Pharo/images/
 }
 
 _find_current_directory_() {
