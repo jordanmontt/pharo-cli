@@ -7,11 +7,11 @@
 pharo_images_location='~/Documents/Pharo/images'
 default_pharo_version=11
 
-### Aliases
-
-alias cdphi="cd $pharo_images_location"
-
 ### Private functions
+
+_go_to_pharo_images_folder_() {
+    cd $pharo_images_location
+}
 
 _find_current_directory_() {
     # some magic to find out the real location of this script dealing with symlinks
@@ -52,7 +52,7 @@ _rename_images_files() {
 open() {
     old_location=$(_find_current_directory_)
 
-    cdphi
+    _go_to_pharo_images_folder_
 
     image_name=$(ls -t | fzf)
     if [ -z $image_name ]; then
@@ -69,7 +69,7 @@ open() {
 remove() {
     old_location=$(pwd)
 
-    cdphi
+    _go_to_pharo_images_folder_
 
     image_name=$(ls -t | fzf)
     if [ -z $image_name ]; then
@@ -90,7 +90,7 @@ remove() {
 duplicate() {
     old_location=$(pwd)
 
-    cdphi
+    _go_to_pharo_images_folder_
     image_to_duplicate_name=$(ls -t | fzf)
     if [ -z $image_to_duplicate_name ]; then
         cd $old_location
@@ -138,7 +138,7 @@ install_image() {
     fi
 
     # Creating folder and go
-    cdphi
+    _go_to_pharo_images_folder_
     mkdir $image_name
     cd $image_name
 
