@@ -100,9 +100,9 @@ Lists pharo-cli version
 
 ## Installation
 
-`pharo-cli` uses [fzf](https://github.com/junegunn/fzf) for the fuzzy search, so you need to install it.[fzf](https://github.com/junegunn/fzf) is a Unix command line filter.
+First you need to install [fzf](https://github.com/junegunn/fzf) that `pharo-cli` uses for doing the fuzzy search of the list of images.
 
-After that, you need to clone this repository on `~/.pharo`. You will have as a result the code of this repo here: `~/.pharo/pharo-cli`. And finally you need to update your `$PATH` variable to point to `~/.pharo/pharo-cli`. For example in my case I need to add: `export PATH="$PATH:/Users/sebastian/.pharo/pharo-cli/bin/"` to my `.zshrc` file.
+After that, you need to clone this repository on `~/.pharo`. You will have as a result the code of this repo here: `~/.pharo/pharo-cli/`. And finally you need to update your `$PATH` variable to point to `~/.pharo/pharo-cli/`. For example in my case I need to add: `export PATH="$PATH:/Users/sebastian/.pharo/pharo-cli/bin/"` to my `.zshrc` file.
 
 ### Using `pi`
 
