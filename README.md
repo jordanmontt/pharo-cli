@@ -6,6 +6,9 @@
 
 You can run `pharo help` and `pharo examples` to have more info of how the tools works.
 
+![gif5](https://user-images.githubusercontent.com/33934979/226468018-d9387b97-4c0c-4997-a1e0-e0b417715c14.gif)
+
+
 ```bash
 $ pharo help
 ```
@@ -62,10 +65,10 @@ USAGE EXAMPLES:
 Downloads a new latest development version Pharo image. Asks for a name. If no name was specified uses the current date and time.
 
     pharo new 10
-Downloads a new Pharo 10 image.
+Downloads a new Pharo 100 image.
 
     pharo new 09
-Downloads a new Pharo 9 image.
+Downloads a new Pharo 90 image.
 
     pharo open
 Lists all images and then opens the selected one. Supports fuzzy search.
@@ -97,13 +100,15 @@ Lists pharo-cli version
 
 ## Installation
 
-`pharo-cli` uses [fzf](https://github.com/junegunn/fzf) for the fuzzy search, so you need to install it.[fzf](https://github.com/junegunn/fzf) is a Unix command line filter.
+_Automate the cloning of the repository and the update of the PATH variable is missing. It will be added for a next release._
 
-After that, you need to clone this repository on `~/.pharo`. You will have as a result the code of this repo here: `~/.pharo/pharo-cli`. And finally you need to update your `$PATH` variable to point to `~/.pharo/pharo-cli`. For example in my case I need to add: `export PATH="$PATH:/Users/sebastian/.pharo/pharo-cli/bin/"` to my `.zshrc` file.
+First you need to install [fzf](https://github.com/junegunn/fzf) that `pharo-cli` uses for doing the fuzzy search of the list of images.
+
+After that, you need to clone this repository on `~/.pharo`. You will have as a result the code of this repo here: `~/.pharo/pharo-cli/`. And finally you need to update your `$PATH` variable to point to `~/.pharo/pharo-cli/`. For example in my case I need to add: `export PATH="$PATH:/Users/sebastian/.pharo/pharo-cli/bin/"` to my `.zshrc` file.
 
 ### Using `pi`
 
-[pi](https://github.com/hernanmd/pi) is an application for installing packages for Pharo Smalltalk. It is a `pip` like tool in which you can do: `pi install pharo-ai` to install the package into your image.
+[pi](https://github.com/hernanmd/pi) works great in combination with this tool. `pi` is an application for installing packages for Pharo Smalltalk. It is a `pip` like tool in which you can do: `pi install pharo-ai` to install the package into your image.
 
 ## Authors
 
