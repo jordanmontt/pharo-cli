@@ -65,10 +65,10 @@ USAGE EXAMPLES:
 Downloads a new latest development version Pharo image. Asks for a name. If no name was specified uses the current date and time.
 
     pharo new 10
-Downloads a new Pharo 10 image.
+Downloads a new Pharo 100 image.
 
     pharo new 09
-Downloads a new Pharo 9 image.
+Downloads a new Pharo 90 image.
 
     pharo open
 Lists all images and then opens the selected one. Supports fuzzy search.
