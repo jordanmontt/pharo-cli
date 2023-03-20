@@ -9,10 +9,11 @@ print_version() {
 }
 
 print_basic_help() {
-    printf "Usage: %s [ n | new <pharo_version> ] [ o | open <vm arguments> ] [ r | remove ]" "$command_name"
+    printf "Usage: %s [ n | new <pharo_version> ] [ o | open <vm arguments> ] [ re | rename ]" "$command_name"
     printf "\n"
-    printf "             [ d | duplicate ] [ h | help ] [ e | examples ] [ v | version]" "$command_name"
+    printf "             [ rm | remove ] [ d | duplicate ] [ h | help ] [ e | examples ] [ v | version ]" "$command_name"
     printf "\n"
+    printf "             [ v | version]" "$command_name"
     printf "\n"
 }
 
@@ -38,6 +39,9 @@ The options include:
     open <vm_arguments>        Lists all pharo images present in the images folder.
                                Supports fuzzy search and navigation.
                                It sends to the vm all the arguments if they were specified.
+
+    rename                     Renames the selected image to the entered name.
+                               Aborts if no name was entered.
 
     duplicate                  Duplicates an image and renames it.
                                If name not specified adds an incremental number at the end.
@@ -70,6 +74,9 @@ Lists all images and then opens the selected one. Supports fuzzy search.
 
     $command_name open -logLevel=4 
 Opens the selected Pharo image sending the parameter logLevel=4 to the vm.
+
+    $command_name rename
+Lists all images, renames the selected one to the entered name.
 
     $command_name duplicate
 Duplicates the selected image. Ask for a name. If no one was specified adds an incremental number to the end.

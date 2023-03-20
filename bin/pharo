@@ -5,7 +5,7 @@
 
 source "${BASH_SOURCE%/*}"/../src/image-manager.sh
 source "${BASH_SOURCE%/*}"/../src/command-parser.sh
-source "${BASH_SOURCE%/*}"/../src/help.sh
+source "${BASH_SOURCE%/*}"/../src/help-commands.sh
 
 #################################
 ## Main Section

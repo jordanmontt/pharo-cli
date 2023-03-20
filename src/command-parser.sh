@@ -1,14 +1,14 @@
 #!/bin/bash
 
 source "${BASH_SOURCE%/*}"/image-manager.sh
-source "${BASH_SOURCE%/*}"/../src/help.sh
+source "${BASH_SOURCE%/*}"/../src/help-commands.sh
 
 parse_command() {
 	case "$1" in
 	open | o)
 		open
 		;;
-	remove | r)
+	remove | rm)
 		remove
 		;;
 	duplicate | d)
@@ -27,6 +27,10 @@ parse_command() {
 		;;
 	examples | e)
 		print_examples
+		exit 0
+		;;
+	rename | re)
+		rename
 		exit 0
 		;;
 	*)

@@ -41,12 +41,19 @@ _open_pharo_() {
     fi
 }
 
-_rename_images_files() {
+_rename_images_files_() {
     name=${1}
     new_name=${2}
     echo "Renaming Pharo image ${name} to ${new_name}"
     mv "${name}".image "${new_name}".image
     mv "${name}".changes "${new_name}".changes
+}
+
+_rename_files_and_conteiner_folder_() {
+    _rename_images_files_ ${1} ${2}
+    cd ..
+    echo "Renaming folder ${1} to ${2}"
+    mv "${1}" "${2}"
 }
 
 ### End private functions
@@ -66,6 +73,28 @@ open() {
     _open_pharo_ . ${@}
 
     cd $old_location
+}
+
+rename() {
+    old_location=$(_find_current_directory_)
+
+    _go_to_pharo_images_folder_
+
+    image_name=$(ls -t | fzf)
+    if [ -z $image_name ]; then
+        cd $old_location
+        return -1
+    fi
+
+    cd "$image_name"
+    echo "Enter a new name:"
+    read new_image_name
+    if [ -z $new_image_name ]; then
+        cd $old_location
+        return -1
+    fi
+
+    _rename_files_and_conteiner_folder_ $image_name $new_image_name
 }
 
 remove() {
@@ -116,7 +145,7 @@ duplicate() {
 
     cp -R $image_to_duplicate_name $new_image_name
     cd $new_image_name
-    _rename_images_files ${image_to_duplicate_name%?} $new_image_name
+    _rename_images_files_ ${image_to_duplicate_name%?} $new_image_name
 
     cd $old_location
 }
@@ -149,7 +178,7 @@ install_image() {
     curl -L $link_to_download | bash
 
     # Rename files to image_name
-    _rename_images_files "Pharo" $image_name
+    _rename_images_files_ "Pharo" $image_name
 
     # Open Pharo
     _open_pharo_ .
