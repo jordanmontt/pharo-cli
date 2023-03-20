@@ -30,7 +30,7 @@ parse_command() {
 		exit 0
 		;;
 	*)
-		print_help
+		echo Unknow command $1
 		exit 1
 		;;
 	esac
