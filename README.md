@@ -106,7 +106,7 @@ After that, you need to clone this repository on `~/.pharo`. You will have as a 
 
 ### Using `pi`
 
-[pi](https://github.com/hernanmd/pi) is an application for installing packages for Pharo Smalltalk. It is a `pip` like tool in which you can do: `pi install pharo-ai` to install the package into your image.
+[pi](https://github.com/hernanmd/pi) works great in combination with this tool. `pi` is an application for installing packages for Pharo Smalltalk. It is a `pip` like tool in which you can do: `pi install pharo-ai` to install the package into your image.
 
 ## Authors
 
