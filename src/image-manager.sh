@@ -4,7 +4,7 @@
 
 ### Variables
 
-pharo_images_location="~/Documents/Pharo/images/"
+pharo_images_location="~/Documents/PharoImages/"
 default_pharo_version=110
 
 ### Private functions
@@ -12,7 +12,7 @@ default_pharo_version=110
 ###### HERE TO CHANGE YOUR IMAGE FOLDER
 _go_to_pharo_images_folder_() {
     # override this path with your own pharo imaages path
-    cd ~/Documents/Pharo/images/
+    cd ~/Documents/PharoImages/
 }
 
 _find_current_directory_() {
