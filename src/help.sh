@@ -21,7 +21,7 @@ print_help() {
     cat <<EOF
 $program_name is a command line image manager. It lets you download, open, duplicate and remove pharo images from any version.
 
-For more detailed examples execute " $program_name examples" command.
+For more detailed examples execute "$program_name examples" command.
 
 EOF
 
