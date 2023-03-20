@@ -75,6 +75,17 @@ open() {
     cd $old_location
 }
 
+list() {
+    old_location=$(_find_current_directory_)
+
+    _go_to_pharo_images_folder_
+    for f in $(ls -t); do
+        echo "$f"
+    done
+
+    cd $old_location
+}
+
 rename() {
     old_location=$(_find_current_directory_)
 

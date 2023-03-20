@@ -33,6 +33,10 @@ parse_command() {
 		rename
 		exit 0
 		;;
+	list | l)
+		list
+		exit 0
+		;;
 	*)
 		echo Unknow command $1
 		exit 1

@@ -1,6 +1,6 @@
 # pharo-cli
 
-`pharo-cli` is a Pharo Image manager. It lets you download, open, rename (coming soon), duplicate and remove Pharo images for any Pharo version. It keeps the images organized in separate folders. In each folder you will have your Pharo image, the data and the respective vm. By default, the images will be stored in `~/Documents/Pharo/images` but it can be changed. `pharo-cli` also supports fuzzy search for searching between your list of images.
+`pharo-cli` is a command-line Pharo Image manager application written in bash. It lets you download, open, rename (coming soon), duplicate and remove Pharo images for any Pharo version. It keeps the images organized in separate folders. In each folder you will have your Pharo image, the data and the respective vm. By default, the images will be stored in `~/Documents/Pharo/images` but it can be changed. `pharo-cli` also supports fuzzy search for searching between your list of images.
 
 ## How to use
 
@@ -17,8 +17,9 @@ pharo-cli is a command line image manager. It lets you download, open, duplicate
 For more detailed examples execute "pharo-cli examples" command.
 
 Usage: pharo [ n | new <pharo_version> ] [ o | open <vm arguments> ] [ re | rename ]
-             [ rm | remove ] [ d | duplicate ] [ h | help ] [ e | examples ] [ v | version ]
-             [ v | version]
+             [ rm | remove ] [ d | duplicate ] [ h | help ] [ l | list ] 
+             [ e | examples ] [ v | version]
+
 The options include:
     new <pharo_version>        Downloads a Pharo image using the specified version.
                                Uses the latest development version by default if no version was
@@ -40,6 +41,11 @@ The options include:
 
     help                       Shows help menu
 
+    list                       List all images cointened in the image folder
+
+    examples                   How to use examples
+
+    version                    Current version of pharo-cli
 
 Developed by jordanmontt: https://github.com/jordanmontt/pharo-cli
 This software is licensed under the MIT License.
@@ -76,7 +82,17 @@ Duplicates the selected image. Ask for a name. If no one was specified adds an i
     pharo remove
 Lists all images and removes the selected one. It aborts if the operation was canceled.
 
+    pharo help
+Shows information and commandsabout the tool.
 
+    pharo list
+Lists all images.
+
+    pharo examples
+Lists examples.
+
+    pharo version
+Lists pharo-cli version
 ```
 
 ## Installation

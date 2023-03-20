@@ -11,9 +11,10 @@ print_version() {
 print_basic_help() {
     printf "Usage: %s [ n | new <pharo_version> ] [ o | open <vm arguments> ] [ re | rename ]" "$command_name"
     printf "\n"
-    printf "             [ rm | remove ] [ d | duplicate ] [ h | help ] [ e | examples ] [ v | version ]" "$command_name"
+    printf "             [ rm | remove ] [ d | duplicate ] [ h | help ] [ l | list ] " "$command_name"
     printf "\n"
-    printf "             [ v | version]" "$command_name"
+    printf "             [ e | examples ] [ v | version]" "$command_name"
+    printf "\n"
     printf "\n"
 }
 
@@ -50,6 +51,11 @@ The options include:
 
     help                       Shows help menu
 
+    list                       List all images cointened in the image folder
+
+    examples                   How to use examples
+
+    version                    Current version of pharo-cli
 
 Developed by jordanmontt: https://github.com/jordanmontt/pharo-cli
 This software is licensed under the MIT License.
@@ -83,5 +89,17 @@ Duplicates the selected image. Ask for a name. If no one was specified adds an i
 
     $command_name remove
 Lists all images and removes the selected one. It aborts if the operation was canceled.
+
+    $command_name help
+Shows information and commandsabout the tool.
+
+    $command_name list
+Lists all images.
+
+    $command_name examples
+Lists examples.
+
+    $command_name version
+Lists pharo-cli version
 EOF
 }
