@@ -6,6 +6,9 @@
 
 You can run `pharo help` and `pharo examples` to have more info of how the tools works.
 
+![gif5](https://user-images.githubusercontent.com/33934979/226468018-d9387b97-4c0c-4997-a1e0-e0b417715c14.gif)
+
+
 ```bash
 $ pharo help
 ```
