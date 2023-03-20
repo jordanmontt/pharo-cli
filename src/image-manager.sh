@@ -11,17 +11,17 @@ default_pharo_version=11
 
 ###### HERE TO CHANGE YOUR IMAGE FOLDER
 _go_to_pharo_images_folder_() {
-    # override this path with your own pharo imaages path 
+    # override this path with your own pharo imaages path
     cd ~/Documents/Pharo/images/
 }
 
 _find_current_directory_() {
     # some magic to find out the real location of this script dealing with symlinks
-    DIR=`readlink "$0"` || DIR="$0";
-    DIR=`dirname "$DIR"`;
+    DIR=$(readlink "$0") || DIR="$0"
+    DIR=$(dirname "$DIR")
     cd "$DIR"
-    DIR=`pwd`
-    cd - > /dev/null
+    DIR=$(pwd)
+    cd - >/dev/null
     echo $DIR
 }
 
@@ -149,7 +149,7 @@ install_image() {
     curl -L $link_to_download | bash
 
     # Rename files to image_name
-   _rename_images_files "Pharo" $image_name
+    _rename_images_files "Pharo" $image_name
 
     # Open Pharo
     _open_pharo_ .
