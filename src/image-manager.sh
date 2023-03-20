@@ -185,7 +185,8 @@ install_image() {
     cd $image_name
 
     # Download Pharo
-    link_to_download="https://get.pharo.org/64/${pharo_version}0+vm"
+    link_to_download="https://get.pharo.org/64/${pharo_version}+vm"
+
     curl -L $link_to_download | bash
 
     # Rename files to image_name

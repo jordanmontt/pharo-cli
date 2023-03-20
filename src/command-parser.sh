@@ -6,7 +6,7 @@ source "${BASH_SOURCE%/*}"/../src/help-commands.sh
 parse_command() {
 	case "$1" in
 	open | o)
-		open
+		open ${@:2}
 		;;
 	remove | rm)
 		remove
@@ -15,7 +15,7 @@ parse_command() {
 		duplicate
 		;;
 	new | n)
-		install_image
+		install_image ${2}
 		;;
 	version | v)
 		print_version

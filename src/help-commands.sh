@@ -69,10 +69,10 @@ USAGE EXAMPLES:
     $command_name new
 Downloads a new latest development version Pharo image. Asks for a name. If no name was specified uses the current date and time.
 
-    $command_name new 10
+    $command_name new 100
 Downloads a new Pharo 10 image.
 
-    $command_name new 09
+    $command_name new 90
 Downloads a new Pharo 9 image.
 
     $command_name open
