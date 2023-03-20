@@ -5,7 +5,7 @@
 ### Variables
 
 pharo_images_location="~/Documents/Pharo/images/"
-default_pharo_version=11
+default_pharo_version=110
 
 ### Private functions
 
@@ -151,12 +151,12 @@ duplicate() {
             counter=$((counter + 1))
             does_the_image_exists=$(find . -name "${image_to_duplicate_name%?}-${counter}" -maxdepth 1)
         done
-        new_image_name="${image_to_duplicate_name%?}-${counter}"
+        new_image_name="${image_to_duplicate_name}-${counter}"
     fi
 
     cp -R $image_to_duplicate_name $new_image_name
     cd $new_image_name
-    _rename_images_files_ ${image_to_duplicate_name%?} $new_image_name
+    _rename_images_files_ $image_to_duplicate_name $new_image_name
 
     cd $old_location
 }
