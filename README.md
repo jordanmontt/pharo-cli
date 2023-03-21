@@ -17,7 +17,7 @@ $ pharo help
 pharo-cli - A Pharo Images Manager [version 0.8]
 pharo-cli is a command line image manager. It lets you download, open, duplicate and remove pharo images from any version.
 
-For more detailed examples execute "pharo-cli examples" command.
+For more detailed examples execute "pharo examples" command.
 
 Usage: pharo [ n | new <pharo_version> ] [ o | open <vm arguments> ] [ re | rename ]
              [ rm | remove ] [ d | duplicate ] [ h | help ] [ l | list ] 
