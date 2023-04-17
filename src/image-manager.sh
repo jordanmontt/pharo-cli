@@ -5,7 +5,7 @@
 ### Variables
 
 pharo_images_location="~/Documents/PharoImages/"
-default_pharo_version=110
+default_pharo_version=120
 
 ### Private functions
 
