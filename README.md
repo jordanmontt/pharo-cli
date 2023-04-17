@@ -109,11 +109,3 @@ First you need to install [fzf](https://github.com/junegunn/fzf) that `pharo-cli
 After that, you need to clone this repository on `~/.pharo`. You will have as a result the code of this repo here: `~/.pharo/pharo-cli/`. And finally you need to update your `$PATH` variable to point to `~/.pharo/pharo-cli/`. For example in my case I need to add: `export PATH="$PATH:/Users/sebastian/.pharo/pharo-cli/bin/"` to my `.zshrc` file.
 
 Finally, you need to create the folder `~/Documents/PharoImages`. That is the folder in which the images will be stored.
-
-### Using `pi`
-
-[pi](https://github.com/hernanmd/pi) works great in combination with this tool. `pi` is an application for installing packages for Pharo Smalltalk. It is a `pip` like tool in which you can do: `pi install pharo-ai` to install the package into your image.
-
-## Authors
-
-Sebastian Jordan Montaño
