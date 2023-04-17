@@ -1,6 +1,6 @@
 # pharo-cli
 
-`pharo-cli` is a command-line Pharo Image manager application written in bash. It lets you download, open, rename (coming soon), duplicate and remove Pharo images for any Pharo version. It keeps the images organized in separate folders. In each folder you will have your Pharo image, the data and the respective vm. By default, the images will be stored in `~/Documents/Pharo/images` but it can be changed. `pharo-cli` also supports fuzzy search for searching between your list of images.
+`pharo-cli` is a command-line Pharo Image manager application written in bash. It lets you download, open, rename (coming soon), duplicate and remove Pharo images for any Pharo version. It keeps the images organized in separate folders. In each folder you will have your Pharo image, the data and the respective vm. By default, the images will be stored in `~/Documents/PharoImages` but it can be changed. `pharo-cli` also supports fuzzy search for searching between your list of images.
 
 ## How to use
 
@@ -101,6 +101,8 @@ Lists pharo-cli version
 ## Installation
 
 _Automate the cloning of the repository and the update of the PATH variable is missing. It will be added for a next release._
+
+**In this current implementation the code is hard coded to work only in mac. You can change the _open_pharo_ function to point to your vm. I'll fix this in a next realise.**
 
 First you need to install [fzf](https://github.com/junegunn/fzf) that `pharo-cli` uses for doing the fuzzy search of the list of images.
 
