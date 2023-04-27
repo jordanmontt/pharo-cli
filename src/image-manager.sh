@@ -32,8 +32,8 @@ _open_pharo_() {
     else
         cd "$directory"
         local_vm='pharo-vm/Pharo.app/Contents/MacOS/Pharo'
-        image=$(find . -name "*.image")
-        echo 'Opening Pharo in location: '$(pwd)
+        image=$(find . -name "*.image" -maxdepth 1)
+        echo 'Opening Pharo image:' $image 'in location: '$(pwd)
 
         # disable parameter expansion to forward all arguments unprocessed to the VM
         set -f
