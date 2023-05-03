@@ -37,7 +37,7 @@ _open_pharo_() {
 
         # disable parameter expansion to forward all arguments unprocessed to the VM
         set -f
-        $local_vm $image ${@:2}
+        $local_vm ${@:2} $image
     fi
 }
 
