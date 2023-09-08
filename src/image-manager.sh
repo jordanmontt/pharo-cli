@@ -4,15 +4,18 @@
 
 ### Variables
 
-pharo_images_location="~/Documents/PharoImages/"
-default_pharo_version=120
+###### HERE TO CHANGE YOUR IMAGE FOLDER
+# override this path with your own pharo imaages path
+pharo_images_location="$HOME/Documents/PharoImages/"
+# override this with your own vm path (The path varies with the OS)
+local_vm='pharo-vm/Pharo.app/Contents/MacOS/Pharo'
+#alpha is always the latest version of Pharo
+default_pharo_version=alpha
 
 ### Private functions
 
-###### HERE TO CHANGE YOUR IMAGE FOLDER
 _go_to_pharo_images_folder_() {
-    # override this path with your own pharo imaages path
-    cd ~/Documents/PharoImages/
+    cd $pharo_images_location
 }
 
 _find_current_directory_() {
@@ -31,7 +34,6 @@ _open_pharo_() {
         echo "Error, you need to send an image directory as argument"
     else
         cd "$directory"
-        local_vm='pharo-vm/Pharo.app/Contents/MacOS/Pharo'
         image=$(find . -name "*.image" -maxdepth 1)
         echo 'Opening Pharo image:' $image 'in location: '$(pwd)
 
