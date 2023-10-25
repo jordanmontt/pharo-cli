@@ -2,18 +2,19 @@
 
 `pharo-cli` is a command-line Pharo Image manager application written in bash. It lets you download, open, rename (coming soon), duplicate and remove Pharo images for any Pharo version. It keeps the images organized in separate folders. In each folder you will have your Pharo image, the data and the respective vm. By default, the images will be stored in `~/Documents/PharoImages` but it can be changed. `pharo-cli` also supports fuzzy search for searching between your list of images.
 
+This is a personal work that I use everyday to manage my Pharo images. It's for the people that prefer using the terminal. It is not meant to be a replacement of the [PharoLauncher](https://github.com/pharo-project/pharo-launcher). As I use this, it only works for MacOS out-of-the-box. It can be easily changed to work also in Linux and Windows (see below). If there is interest of people of using this project, I can put some work to make this OS-agnostic.
+
 ## How to use
 
 You can run `pharo help` and `pharo examples` to have more info of how the tools works.
 
 ![gif5](https://user-images.githubusercontent.com/33934979/226468018-d9387b97-4c0c-4997-a1e0-e0b417715c14.gif)
 
-
 ```bash
 $ pharo help
 ```
 
-```
+```bash
 pharo-cli - A Pharo Images Manager [version 0.8]
 pharo-cli is a command line image manager. It lets you download, open, duplicate and remove pharo images from any version.
 
@@ -58,7 +59,7 @@ This software is licensed under the MIT License.
 $ pharo examples
 ```
 
-```
+```bash
 USAGE EXAMPLES:
 
     pharo new
@@ -86,7 +87,7 @@ Duplicates the selected image. Ask for a name. If no one was specified adds an i
 Lists all images and removes the selected one. It aborts if the operation was canceled.
 
     pharo help
-Shows information and commandsabout the tool.
+Shows information and commands about the tool.
 
     pharo list
 Lists all images.
@@ -98,14 +99,24 @@ Lists examples.
 Lists pharo-cli version
 ```
 
-## Installation
-
-_Automate the cloning of the repository and the update of the PATH variable is missing. It will be added for a next release._
-
-**In this current implementation the code is hard coded to work only in mac. You can change the _open_pharo_ function to point to your vm. I'll fix this in a next realise.**
+## How to install
 
 First you need to install [fzf](https://github.com/junegunn/fzf) that `pharo-cli` uses for doing the fuzzy search of the list of images.
+
+The, you need to install [trash](https://github.com/ali-rantakari/trash) using `brew install trash`. This is for not deleting the pharo images using `rm -rf` which is irreversible.
 
 After that, you need to clone this repository on `~/.pharo`. You will have as a result the code of this repo here: `~/.pharo/pharo-cli/`. And finally you need to update your `$PATH` variable to point to `~/.pharo/pharo-cli/`. For example in my case I need to add: `export PATH="$PATH:/Users/sebastian/.pharo/pharo-cli/bin/"` to my `.zshrc` file.
 
 Finally, you need to create the folder `~/Documents/PharoImages`. That is the folder in which the images will be stored.
+
+## Important notes
+
+This implementation currently only works on MacOS out-of-the-box. You can make it work easily on other OS. For that, you need:
+
+- to change the `_open_pharo_` function to point to your vm. Currently it's hard coded to get the MacOS VM.
+- Replace the use of the command `trash` which only works for Mac and use an equivalent. It can be `rm` or your command of preference.
+
+## Future improvements
+
+- Automate the cloning of the repository and the update of the PATH variable is missing. It will be added in a next release. I would like to have something like `brew install pharo-cli`.
+- Generate automatically the help command. For example https://github.com/SierraSoftworks/bash-cli

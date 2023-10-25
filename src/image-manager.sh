@@ -124,7 +124,7 @@ remove() {
     echo "Are you sure that you want to delete ${image_name} y/n?"
     read choice
     case "$choice" in
-    y | Y) rm -rf "$image_name" && echo "Image ${image_name} deleted successfully" ;;
+    y | Y) trash -F "$image_name" && echo "Image ${image_name} moved to Trash successfully" ;;
     *) echo "Canceling" ;;
     esac
 
