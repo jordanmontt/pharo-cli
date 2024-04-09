@@ -46,8 +46,9 @@ _open_pharo_() {
 _rename_images_files_() {
     name=${1}
     new_name=${2}
-    echo "Renaming Pharo image ${name} to ${new_name}"
+    echo "Renaming ${name}.image to ${new_name}.image"
     mv "${name}".image "${new_name}".image
+    echo "Renaming ${name}.changes to ${new_name}.changes"
     mv "${name}".changes "${new_name}".changes
 }
 
