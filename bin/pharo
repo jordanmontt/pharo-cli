@@ -3,12 +3,11 @@
 # pharo image manager
 #
 
-source "${BASH_SOURCE%/*}"/../src/image-manager.sh
-source "${BASH_SOURCE%/*}"/../src/command-parser.sh
-source "${BASH_SOURCE%/*}"/../src/help-commands.sh
+source "${BASH_SOURCE%/*}"/../src/pharo.sh
 
 #################################
 ## Main Section
 #################################
 
-parse_command ${@}
+
+parse_user_input ${@}

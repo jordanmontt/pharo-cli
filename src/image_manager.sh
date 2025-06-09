@@ -1,25 +1,16 @@
-# Configuration for Pharo Scripts
-#!/bin/bash
 #!/usr/bin/env bash
 
-### Variables
-
-###### HERE TO CHANGE YOUR IMAGE FOLDER
-# override this path with your own pharo imaages path
-pharo_images_location="$HOME/Documents/PharoImages/"
-# override this with your own vm path (The path varies with the OS)
-local_vm='pharo-vm/Pharo.app/Contents/MacOS/Pharo'
-#alpha is always the latest version of Pharo
-default_pharo_version=alpha
+# Load config variables
+source "${BASH_SOURCE%/*}/config.sh"
 
 ### Private functions
 
 _go_to_pharo_images_folder_() {
-    cd $pharo_images_location
+    cd $PHARO_IMAGES_DIR
 }
 
 _find_current_directory_() {
-    # some magic to find out the real location of this script dealing with symlinks
+    # some magic to find out the real location of this script dealing with symlinks (copied from zeroconf)
     DIR=$(readlink "$0") || DIR="$0"
     DIR=$(dirname "$DIR")
     cd "$DIR"
@@ -34,12 +25,11 @@ _open_pharo_() {
         echo "Error, you need to send an image directory as argument"
     else
         cd "$directory"
-        image=$(find . -name "*.image" -maxdepth 1)
-        echo 'Opening Pharo image:' $image 'in location: '$(pwd)
-
+        image=$(find . -name "*.image" -maxdepth 1 | head -n 1)
+        echo "Opening Pharo image: $image in location: $(pwd)" 
         # disable parameter expansion to forward all arguments unprocessed to the VM
         set -f
-        $local_vm ${@:2} $image
+        $LOCAL_VM_DIR ${@:2} $image
     fi
 }
 
@@ -52,16 +42,18 @@ _rename_images_files_() {
     mv "${name}".changes "${new_name}".changes
 }
 
-_rename_files_and_conteiner_folder_() {
+_rename_files_and_container_folder_() {
     _rename_images_files_ ${1} ${2}
     cd ..
     echo "Renaming folder ${1} to ${2}"
     mv "${1}" "${2}"
 }
 
-### End private functions
+####
+######## API
+####
 
-open() {
+open_image() {
     old_location=$(_find_current_directory_)
 
     _go_to_pharo_images_folder_
@@ -69,6 +61,7 @@ open() {
     image_name=$(ls -t | fzf)
     if [ -z $image_name ]; then
         cd $old_location
+        echo "Operation canceled."
         return -1
     fi
 
@@ -78,7 +71,7 @@ open() {
     cd $old_location
 }
 
-list() {
+list_all_images() {
     old_location=$(_find_current_directory_)
 
     _go_to_pharo_images_folder_
@@ -89,7 +82,7 @@ list() {
     cd $old_location
 }
 
-rename() {
+rename_image() {
     old_location=$(_find_current_directory_)
 
     _go_to_pharo_images_folder_
@@ -108,10 +101,10 @@ rename() {
         return -1
     fi
 
-    _rename_files_and_conteiner_folder_ $image_name $new_image_name
+    _rename_files_and_container_folder_ $image_name $new_image_name
 }
 
-remove() {
+remove_image() {
     old_location=$(pwd)
 
     _go_to_pharo_images_folder_
@@ -123,16 +116,16 @@ remove() {
     fi
 
     echo "Are you sure that you want to move to the Trash the image: ${image_name} y/n?"
-    read choice
+    read -r choice < /dev/stdin
     case "$choice" in
-    y | Y) trash -F "$image_name" && echo "Image ${image_name} moved to the Trash successfully" ;;
+    y | Y) trash -F "$PHARO_IMAGES_DIR/$image_name" && echo "Image ${image_name} moved to the Trash successfully" ;;
     *) echo "Canceling" ;;
     esac
 
     cd $old_location
 }
 
-duplicate() {
+duplicate_image() {
     old_location=$(pwd)
 
     _go_to_pharo_images_folder_
@@ -168,18 +161,23 @@ duplicate() {
 install_image() {
     old_location=$(_find_current_directory_)
 
-    # Pharo version to download
+    # Optional parameters
+    # Pharo version (90, 100, 140...)
     pharo_version=${1}
     if [ -z $pharo_version ]; then
-        pharo_version=$default_pharo_version
+        pharo_version=$DEFAULT_PHARO_VERSION
     fi
 
-    #Getting image name
-    current_date=$(date +"%d-%m-%Y-%Hh%M")
-    echo "Enter an image name: (skip to use ${current_date})"
-    read image_name
+    # Image name
+    image_name=${2}
     if [ -z $image_name ]; then
-        image_name=$current_date
+        #Getting image name
+        current_date=$(date +"%d-%m-%Y-%Hh%M")
+        echo "Enter an image name: (skip to use ${current_date})"
+        read image_name
+        if [ -z $image_name ]; then
+            image_name=$current_date
+        fi
     fi
 
     # Creating folder and go
@@ -198,5 +196,5 @@ install_image() {
     # Open Pharo
     _open_pharo_ .
 
-    cd $old_location
+    cd $old_location 
 }
