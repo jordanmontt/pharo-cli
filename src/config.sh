@@ -1,5 +1,5 @@
 ### Variables
-PHARO_IMAGES_DIR="${PHARO_IMAGES_DIR:-$HOME/PharoCliImages}"
+PHARO_IMAGES_DIR="${PHARO_IMAGES_DIR:-$HOME/Documents/PharoCliImages}"
 LOCAL_VM_DIR='pharo-vm/Pharo.app/Contents/MacOS/Pharo'
 DEFAULT_PHARO_VERSION=alpha #alpha is always the latest version of Pharo
 INSTALL_DIR="${INSTALL_DIR:-$HOME/.pharo-cli}"
