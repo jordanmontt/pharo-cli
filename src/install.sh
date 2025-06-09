@@ -38,7 +38,7 @@ if [ ! -d "$PHARO_IMAGES_DIR" ]; then
 fi
 
 # Update PATH in .zshrc or .bash_profile
-PATH_LINE="export PATH=\"\$PATH:$INSTALL_DIR/pharo-cli/bin\""
+PATH_LINE="export PATH=\"\$PATH:$INSTALL_DIR/bin\""
 
 if [ -f "$ZSHRC" ]; then
     if ! grep -Fx "$PATH_LINE" "$ZSHRC" >/dev/null; then

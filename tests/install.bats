@@ -69,5 +69,5 @@ teardown() {
   run source "$BATS_TEST_DIRNAME/../src/install.sh"
   [ "$status" -eq 0 ]
   [[ "$output" =~ "Adding pharo-cli to PATH variable in $ZSHRC" ]]
-  grep "export PATH=\"\$PATH:$INSTALL_DIR/pharo-cli/bin\"" "$ZSHRC"
+  grep "export PATH=\"\$PATH:$INSTALL_DIR/bin\"" "$ZSHRC"
 }
