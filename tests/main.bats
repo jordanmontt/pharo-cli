@@ -1,7 +1,7 @@
 #!/usr/bin/env bats
 
 setup() {
-    source "$BATS_TEST_DIRNAME/../src/pharo.sh"
+    source "$BATS_TEST_DIRNAME/../src/api.sh"
     source "$BATS_TEST_DIRNAME/../src/command_parser.sh"
 
     export TEST_DIR=$(mktemp -d)

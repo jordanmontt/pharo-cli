@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-source "${BASH_SOURCE%/*}"/pharo.sh
+source "${BASH_SOURCE%/*}"/api.sh
 
 
 parse_user_input() {

@@ -3,7 +3,7 @@
 # pharo image manager
 #
 
-source "${BASH_SOURCE%/*}"/../src/pharo.sh
+source "${BASH_SOURCE%/*}"/../src/command_parser.sh
 
 #################################
 ## Main Section
