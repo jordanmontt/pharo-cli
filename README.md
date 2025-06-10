@@ -21,7 +21,7 @@ brew install pharo-cli
 #### Manual installation
 
 ```bash
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/jordanmontt/pharo-cli/refs/heads/main/src/install.sh)"
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/jordanmontt/pharo-cli/refs/heads/main/install.sh)"
 ```
 
 ### Windows and Linux
