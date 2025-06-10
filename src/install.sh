@@ -19,7 +19,7 @@ fi
 # Install trash
 if ! command -v trash &> /dev/null; then
     echo "trash not found, installing..."
-    brew install trash
+    brew install --HEAD macmade/tap/trash
 fi
 
 # Clone the repository if not already present

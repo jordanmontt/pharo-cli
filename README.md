@@ -134,7 +134,7 @@ USAGE EXAMPLES:
 This implementation currently only works on MacOS out-of-the-box. You can make it work easily on other OS. For that, you need:
 
 - Change the `LOCAL_VM_DIR` variable in `config.sh`. Currently it's hard coded to get the MacOS VM.
-- Replace the use of `trash` and `fzf`, which only work on MacOS. Instead of `trash` one can use `rm` or your command of preference. Instead of `fzf` one could use just `ls` or an equivalent command.
+- Replace the use of `trash` which only works on MacOS. Instead of `trash` one can use `rm` or your command of preference. For `fzf`it normally works for Linux and Windows. Check the [repo](https://github.com/junegunn/fzf?tab=readme-ov-file#using-homebrew)
 
 ## Future Improvements
 
