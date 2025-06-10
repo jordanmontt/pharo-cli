@@ -8,4 +8,4 @@ jobs:
       - name: Install Bats
         run: sudo apt-get install -y bats
       - name: Run Tests
-        run: bats test/*.bats
+        run: bats tests/*.bats
