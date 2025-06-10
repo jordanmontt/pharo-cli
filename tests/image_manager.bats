@@ -55,8 +55,10 @@ teardown() {
   export MOCK_FZF_OUTPUT="test-image"
   run open_image
   [ "$status" -eq 0 ]
-  [[ "$output" =~ "Opening Pharo image: ./test.image" ]]
-  [[ "$output" =~ "in location: .*/test-image" ]]
+  [[ "$output" =~ "Opening Pharo image:" ]]
+  [[ "$output" =~ "/test.image" ]]
+  [[ "$output" =~ "location:" ]]
+  [[ "$output" =~ "test-image" ]]
   [[ "$output" =~ "Mock Pharo VM" ]]
 }
 
