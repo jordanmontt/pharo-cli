@@ -114,6 +114,45 @@ teardown() {
   [ -f "$PHARO_IMAGES_DIR/original/original.changes" ]
 }
 
+@test "duplicate_image: handles suffix" {
+  mkdir -p "$PHARO_IMAGES_DIR/original"
+  touch "$PHARO_IMAGES_DIR/original/original.image" "$PHARO_IMAGES_DIR/original/original.changes"
+  export MOCK_FZF_OUTPUT="original"
+
+  run duplicate_image <<< ""
+  [ "$status" -eq 0 ]
+  [ -d "$PHARO_IMAGES_DIR/original" ]
+  [ -f "$PHARO_IMAGES_DIR/original/original.image" ]
+  [ -f "$PHARO_IMAGES_DIR/original/original.changes" ]
+  [ -d "$PHARO_IMAGES_DIR/original-1" ]
+  [ -f "$PHARO_IMAGES_DIR/original-1/original-1.image" ]
+  [ -f "$PHARO_IMAGES_DIR/original-1/original-1.changes" ]
+}
+
+@test "duplicate_image: handles incrementing suffix" {
+  mkdir -p "$PHARO_IMAGES_DIR/original"
+  touch "$PHARO_IMAGES_DIR/original/original.image" "$PHARO_IMAGES_DIR/original/original.changes"
+
+  mkdir -p "$PHARO_IMAGES_DIR/original-1"
+  touch "$PHARO_IMAGES_DIR/original-1/original-1.image" "$PHARO_IMAGES_DIR/original-1/original-1.changes"
+
+  export MOCK_FZF_OUTPUT="original"
+
+  run duplicate_image <<< ""
+  [ "$status" -eq 0 ]
+  [ -d "$PHARO_IMAGES_DIR/original-2" ]
+  [ -f "$PHARO_IMAGES_DIR/original-2/original-2.image" ]
+  [ -f "$PHARO_IMAGES_DIR/original-2/original-2.changes" ]
+
+  [ -d "$PHARO_IMAGES_DIR/original" ]
+  [ -f "$PHARO_IMAGES_DIR/original/original.image" ]
+  [ -f "$PHARO_IMAGES_DIR/original/original.changes" ]
+
+  [ -d "$PHARO_IMAGES_DIR/original-1" ]
+  [ -f "$PHARO_IMAGES_DIR/original-1/original-1.image" ]
+  [ -f "$PHARO_IMAGES_DIR/original-1/original-1.changes" ]
+}
+
 @test "install_image: downloads and renames image" {
   export MOCK_FZF_OUTPUT=""
   run install_image "140" <<< "test-image"

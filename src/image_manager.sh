@@ -29,7 +29,7 @@ _open_pharo_() {
         echo "Opening Pharo image: $image in location: $(pwd)" 
         # disable parameter expansion to forward all arguments unprocessed to the VM
         set -f
-        $LOCAL_VM_DIR ${@:2} $image
+        $LOCAL_VM_DIR ${@:2} $image --interactive
     fi
 }
 
@@ -140,12 +140,10 @@ duplicate_image() {
 
     # Append an incremental number to the end of the image name.
     # Searchs for the next number
-    if [ -z $new_image_name ]; then
+    if [ -z "$new_image_name" ]; then
         counter=1
-        does_the_image_exists=$(find . -name "${image_to_duplicate_name%?}-${counter}" -maxdepth 1)
-        while [ $does_the_image_exists ]; do
+        while [ -d "${image_to_duplicate_name}-${counter}" ]; do
             counter=$((counter + 1))
-            does_the_image_exists=$(find . -name "${image_to_duplicate_name%?}-${counter}" -maxdepth 1)
         done
         new_image_name="${image_to_duplicate_name}-${counter}"
     fi

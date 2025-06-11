@@ -10,13 +10,15 @@ This is a personal work that I use everyday to manage my Pharo images. It's for 
 
 ### For MacOS
 
-You can install `pharo-cli` on MacOS using either of the following methods:
+You can install `pharo-cli` on MacOS using by running the following command (Homebrew installation coming soon):
 
+<!---
 #### Recommended (via Homebrew)
 
 ```bash
 brew install pharo-cli
 ```
+---> 
 
 #### Manual installation
 
