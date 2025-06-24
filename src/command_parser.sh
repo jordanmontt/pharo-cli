@@ -6,7 +6,7 @@ source "${BASH_SOURCE%/*}"/api.sh
 parse_user_input() {
 	case "$1" in
 	open | o)
-		open_command ${@:2}
+		open_command "$@"
 		;;
 	remove | rm)
 		remove_command
@@ -15,7 +15,7 @@ parse_user_input() {
 		duplicate_command
 		;;
 	new | n)
-		install_image_command ${2}
+		install_image_command "$@"
 		;;
 	version | v)
 		print_version_command

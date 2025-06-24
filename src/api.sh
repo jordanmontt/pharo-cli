@@ -18,7 +18,7 @@ duplicate_command() {
 }
 
 install_image_command() { 
-    install_image ${2} 
+    install_image "${@:2}"
 }
 
 print_version_command() {

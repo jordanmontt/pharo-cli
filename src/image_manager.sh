@@ -166,12 +166,16 @@ install_image() {
         pharo_version=$DEFAULT_PHARO_VERSION
     fi
 
-    #Getting image name
-    current_date=$(date +"%d-%m-%Y-%Hh%M")
-    echo "Enter an image name: (skip to use ${current_date})"
-    read image_name
+    # Image name
+    image_name=${2}
     if [ -z $image_name ]; then
-        image_name=$current_date
+        #Getting image name
+        current_date=$(date +"%d-%m-%Y-%Hh%M")
+        echo "Enter an image name: (skip to use ${current_date})"
+        read image_name
+        if [ -z $image_name ]; then
+            image_name=$current_date
+        fi
     fi
     
     # Creating folder and go
