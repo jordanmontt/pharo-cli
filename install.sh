@@ -1,7 +1,12 @@
 #!/usr/bin/env bash
 
-# Load config variables
-source "${BASH_SOURCE%/*}/config.sh"
+# Config variables (defined here, not sourced from src/config.sh, because when
+# this script is run through curl there is no config.sh on disk yet)
+PHARO_IMAGES_DIR="${PHARO_IMAGES_DIR:-$HOME/Documents/PharoCliImages}"
+INSTALL_DIR="${INSTALL_DIR:-$HOME/.pharo-cli}"
+REPO_URL="https://github.com/jordanmontt/pharo-cli.git"
+ZSHRC="${ZSHRC:-$HOME/.zshrc}"
+BASH_PROFILE="${BASH_PROFILE:-$HOME/.bash_profile}"
 
 
 # Check for Homebrew
