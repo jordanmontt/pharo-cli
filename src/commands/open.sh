@@ -7,10 +7,9 @@
 # @option -b --background Run the VM in the background; its output goes to <image>/pharo-cli.log.
 # @option -f --foreground Run the VM in this terminal (the default, see the openMode setting).
 # @option --vm-arg <arg:vm-arg> Pass one argument to the VM. Repeat it to pass several.
-# @example pharo open MyImage | Open the image MyImage.
 # @example pharo open | Choose an image from a list and open it.
 # @example pharo open MyImage --background | Open MyImage and get the terminal back.
-# @example pharo open MyImage --vm-arg --logLevel=4 | Open MyImage with a VM argument.
+# @example pharo open MyImage --vm-arg --logLevel=4 | Pass an argument to the VM.
 
 cmd_open() {
     local name="" mode count=0

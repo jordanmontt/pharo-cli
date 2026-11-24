@@ -23,12 +23,8 @@ Aliases: `c`
 
 Examples:
 
-- `pharo config`: Show every setting.
-- `pharo config set imagesDir ~/Pharo/images`: Keep images in ~/Pharo/images.
-- `pharo config get imagesDir`: Print the images folder setting.
+- `pharo config set imagesDir ~/Pharo/images`: Keep new images in ~/Pharo/images.
 - `pharo config set vmArgs --logLevel=4`: Pass --logLevel=4 to the VM every time.
-- `pharo config unset imagesDir`: Go back to the default images folder.
-- `pharo config reset`: Go back to the defaults for every setting.
 
 ## `duplicate`
 
@@ -47,7 +43,6 @@ Aliases: `d`
 
 Examples:
 
-- `pharo duplicate MyImage Backup`: Copy MyImage as Backup.
 - `pharo duplicate MyImage`: Copy MyImage as MyImage-1.
 
 ## `help`
@@ -63,11 +58,6 @@ Aliases: `h`
 | Argument or option | Description |
 |---|---|
 | `<command>` | The command to explain. |
-
-Examples:
-
-- `pharo help`: Show every command, setting and example.
-- `pharo help new`: Show the arguments and options of new.
 
 ## `import`
 
@@ -88,9 +78,9 @@ Aliases: `im`
 
 Examples:
 
-- `pharo import ~/Downloads/MyProject`: Copy the image in ~/Downloads/MyProject into the images folder.
-- `pharo import ~/Downloads/moose.zip Moose`: Add the image in moose.zip as Moose.
-- `pharo import https://example.org/image.zip`: Download and add the image in a zip.
+- `pharo import ~/Documents/Pharo/images/Moose`: Copy an image from Pharo Launcher's images folder.
+- `pharo import ~/Downloads/moose.zip Moose`: Add the image in moose.zip, named Moose.
+- `pharo import https://example.org/image.zip`: Download a zip and add its image.
 
 ## `info`
 
@@ -105,10 +95,6 @@ Aliases: `i`
 | Argument or option | Description |
 |---|---|
 | `<image>` | The image. Without it, you choose one from a list. |
-
-Examples:
-
-- `pharo info MyImage`: Show the Pharo version, image format, VM, size and dates of MyImage.
 
 ## `list`
 
@@ -126,8 +112,7 @@ Aliases: `l`, `ls`
 
 Examples:
 
-- `pharo list`: List the images with their Pharo version and when they were last opened.
-- `pharo list --quiet`: Print only the image names.
+- `pharo list -q`: Print only the names, for scripts.
 
 ## `new`
 
@@ -156,12 +141,10 @@ Aliases: `n`
 
 Examples:
 
-- `pharo new`: Create an image from the default template (the stable Pharo release).
-- `pharo new 14`: Create an image from the newest Pharo 14 build.
-- `pharo new 14 MyImage`: Create a Pharo 14 image named MyImage.
-- `pharo new MyImage`: Create an image named MyImage from the default template.
-- `pharo new latest MyImage --no-open`: Create MyImage from the newest Pharo version without opening it.
-- `pharo new --name 14 --template stable`: Create an image named 14 from the stable template.
+- `pharo new`: Create an image from the stable Pharo release, with a generated name.
+- `pharo new 14 MyImage`: Create MyImage from the newest Pharo 14 build.
+- `pharo new latest --no-open`: Create an image from the newest Pharo version, without opening it.
+- `pharo new --name 14 --template stable`: Name an image 14: with the flags, 14 is not read as a version.
 
 ## `open`
 
@@ -184,10 +167,9 @@ Aliases: `o`
 
 Examples:
 
-- `pharo open MyImage`: Open the image MyImage.
 - `pharo open`: Choose an image from a list and open it.
 - `pharo open MyImage --background`: Open MyImage and get the terminal back.
-- `pharo open MyImage --vm-arg --logLevel=4`: Open MyImage with a VM argument.
+- `pharo open MyImage --vm-arg --logLevel=4`: Pass an argument to the VM.
 
 ## `path`
 
@@ -206,7 +188,6 @@ Aliases: `p`
 Examples:
 
 - `cd "$(pharo path MyImage)"`: Go to the folder of MyImage.
-- `pharo path`: Print the images folder.
 
 ## `remove`
 
@@ -225,11 +206,6 @@ Aliases: `rm`
 | `<image>` | The image to remove. Without it, you choose one from a list. |
 | `-y, --yes` | Do not ask before deleting for good. |
 
-Examples:
-
-- `pharo remove MyImage`: Move MyImage to the trash.
-- `pharo rm`: Choose an image from a list and move it to the trash.
-
 ## `rename`
 
 ```
@@ -246,11 +222,6 @@ Aliases: `re`
 |---|---|
 | `<image>` | The image to rename. Without it, you choose one from a list. |
 | `<new-name>` | The new name. Without it, you are asked for one. |
-
-Examples:
-
-- `pharo rename MyImage Experiments`: Rename MyImage to Experiments.
-- `pharo rename`: Choose an image from a list and type its new name.
 
 ## `run`
 
@@ -274,7 +245,7 @@ Aliases: `r`
 Examples:
 
 - `pharo run MyImage --eval '3 + 4'`: Print 7.
-- `pharo run MyImage build.st`: Run the script build.st in MyImage.
+- `pharo run MyImage build.st`: Run the script build.st in MyImage, then quit.
 
 ## `self-uninstall`
 
@@ -289,10 +260,6 @@ Removes the pharo-cli folder, the pharo command and its man page, the block the 
 | Argument or option | Description |
 |---|---|
 | `-y, --yes` | Do not ask first. |
-
-Examples:
-
-- `pharo self-uninstall`: Remove pharo-cli, after you confirm.
 
 ## `self-update`
 
@@ -310,7 +277,7 @@ Aliases: `up`
 
 Examples:
 
-- `pharo self-update`: Update to the newest release.
+- `pharo self-update --main`: Try the development version (the main branch).
 
 ## `templates`
 
@@ -331,7 +298,6 @@ Aliases: `t`
 
 Examples:
 
-- `pharo templates`: List all templates.
 - `pharo templates moose`: List the templates whose id or name contains moose.
 
 ## `version`
@@ -343,10 +309,6 @@ pharo version
 Show the version of pharo-cli.
 
 Aliases: `v`
-
-Examples:
-
-- `pharo version`: Print the version.
 
 ## Settings
 

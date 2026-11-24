@@ -5,8 +5,6 @@
 # @description When the system has no trash (Linux without gio or trash-cli), the image is deleted for good, after you confirm.
 # @arg [image:image] The image to remove. Without it, you choose one from a list.
 # @option -y --yes Do not ask before deleting for good.
-# @example pharo remove MyImage | Move MyImage to the trash.
-# @example pharo rm | Choose an image from a list and move it to the trash.
 
 cmd_remove() {
     local name="" yes=false count=0 dir

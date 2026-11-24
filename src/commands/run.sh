@@ -8,7 +8,7 @@
 # @option -e --eval <expression:none> Evaluate an expression and print its result, instead of running a script.
 # @option --vm-arg <arg:vm-arg> Pass one argument to the VM. Repeat it to pass several.
 # @example pharo run MyImage --eval '3 + 4' | Print 7.
-# @example pharo run MyImage build.st | Run the script build.st in MyImage.
+# @example pharo run MyImage build.st | Run the script build.st in MyImage, then quit.
 
 cmd_run() {
     local name="" script="" expression="" has_expression=false count=0

@@ -4,8 +4,7 @@
 # @alias ls
 # @summary List the images, most recently opened or created first.
 # @option -q --quiet Print only the image names, one per line.
-# @example pharo list | List the images with their Pharo version and when they were last opened.
-# @example pharo list --quiet | Print only the image names.
+# @example pharo list -q | Print only the names, for scripts.
 
 cmd_list() {
     local quiet=false names name dir version last

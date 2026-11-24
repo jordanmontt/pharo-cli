@@ -3,7 +3,6 @@
 # @alias i
 # @summary Show details about an image.
 # @arg [image:image] The image. Without it, you choose one from a list.
-# @example pharo info MyImage | Show the Pharo version, image format, VM, size and dates of MyImage.
 
 cmd_info() {
     local name="" count=0 dir image version format value

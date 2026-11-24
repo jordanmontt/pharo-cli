@@ -1,7 +1,8 @@
 #!/usr/bin/env bats
 # Keeps the code, its help, its documentation and its tests in sync. These
-# checks fail when a command is added without help, examples or tests, when
-# an option or setting is never tested, or when the generated docs are stale.
+# checks fail when a command is added without help or tests, when an example
+# is not a valid command line, when an option or setting is never tested, or
+# when the generated docs are stale.
 
 load helpers/common
 
@@ -11,15 +12,35 @@ commands() {
     env PHARO_CLI_ROOT="$PROJECT_ROOT" bash -c '. "$PHARO_CLI_ROOT/src/main.sh"; registry_load; registry_commands'
 }
 
-@test "every command has a summary, at least one example and its function" {
+@test "every command has a summary and its function" {
     local command
     for command in $(commands); do
         run_in_sandbox PHARO_CLI_ROOT="$PROJECT_ROOT" /bin/bash -c '. "$PHARO_CLI_ROOT/src/main.sh"; registry_load
             [ -n "$(registry_value "$1" summary)" ] || { echo "no @summary"; exit 1; }
-            [ -n "$(registry_value "$1" example)" ] || { echo "no @example"; exit 1; }
             declare -F "$(registry_function "$1")" >/dev/null || { echo "no function $(registry_function "$1")"; exit 1; }' _ "$command"
         [ "$status" -eq 0 ] || fail "command $command: $output"
     done
+}
+
+@test "every example is a valid command line" {
+    # Examples are optional: a command has one only when it teaches something
+    # the usage line does not. Each runs against a copy of pharo-cli, never
+    # this project (self-update would update it), with no images and no
+    # network, so most fail; none may fail as a usage error.
+    local copy="$SANDBOX/pharo-cli" examples line
+    mkdir -p "$copy"
+    cp -R "$PROJECT_ROOT/bin" "$PROJECT_ROOT/src" "$PROJECT_ROOT/VERSION" "$copy/"
+    examples=$(run_in_sandbox PHARO_CLI_ROOT="$PROJECT_ROOT" /bin/bash -c '. "$PHARO_CLI_ROOT/src/main.sh"; registry_load
+        for command in $(registry_commands); do registry_values "$command" example; done'; printf '%s\n' "$output")
+    [ -n "$examples" ] || fail "no examples found"
+    while IFS= read -r line; do
+        [ -n "$line" ] || continue
+        run_in_sandbox FAKE_FZF_CHOICE= /bin/bash -c 'PATH="$1:$PATH"; eval "$2" </dev/null' _ "$copy/bin" "${line%% | *}"
+        [ "$status" -ne 2 ] || fail "usage error in the example '${line%% | *}': $output"
+        case "$output" in *"unknown option"* | *"Usage:"*) fail "the example '${line%% | *}' printed: $output" ;; esac
+    done <<EOF
+$examples
+EOF
 }
 
 @test "every command file declares the command it is named after" {

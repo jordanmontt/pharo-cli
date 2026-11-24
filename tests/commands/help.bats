@@ -19,12 +19,24 @@ setup() { sandbox_setup; }
     assert_line --regexp '^  vmArgs +.*Default: \(empty\)$'
 }
 
-@test "help shows the examples of every command" {
+@test "help shows every example as a comment above its command, separated by blank lines" {
     run_pharo help
-    assert_line "  pharo new 14 MyImage"
-    assert_line "      Create a Pharo 14 image named MyImage."
-    assert_line "  pharo run MyImage --eval '3 + 4'"
-    assert_line "  pharo config set imagesDir ~/Pharo/images"
+    assert_output --partial "Examples:
+  # Keep new images in ~/Pharo/images.
+  pharo config set imagesDir ~/Pharo/images
+
+  # Pass --logLevel=4 to the VM every time.
+  pharo config set vmArgs --logLevel=4
+"
+    assert_output --partial "  # Print 7.
+  pharo run MyImage --eval '3 + 4'
+"
+}
+
+@test "commands without examples show no Examples section" {
+    run_pharo help version
+    assert_success
+    refute_output --partial "Examples:"
 }
 
 @test "help <command> shows usage, description, aliases, arguments, options and examples" {
@@ -37,7 +49,11 @@ setup() { sandbox_setup; }
     assert_line --regexp '^  -t, --template <template> +The template to create the image from\.$'
     assert_line --regexp '^  --no-open +Do not open the image once it is created\.$'
     assert_line --regexp '^  -h, --help +Show this help\.$'
-    assert_line "  pharo new latest MyImage --no-open"
+    assert_output --partial "Examples:
+  # Create an image from the stable Pharo release, with a generated name.
+  pharo new
+"
+    assert_line "  pharo new latest --no-open"
 }
 
 @test "help accepts aliases" {

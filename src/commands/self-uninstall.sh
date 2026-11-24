@@ -3,7 +3,6 @@
 # @summary Remove pharo-cli from this computer.
 # @description Removes the pharo-cli folder, the pharo command and its man page, the block the installer added to your shell startup file, and the template cache. Your images and settings are kept.
 # @option -y --yes Do not ask first.
-# @example pharo self-uninstall | Remove pharo-cli, after you confirm.
 
 cmd_self_uninstall() {
     local yes=false root="$PHARO_CLI_ROOT" manifest bin_link man_link rc_files file

@@ -5,8 +5,6 @@
 # @description The image folder is renamed, and so are its .image and .changes files when they carry the old name.
 # @arg [image:image] The image to rename. Without it, you choose one from a list.
 # @arg [new-name:none] The new name. Without it, you are asked for one.
-# @example pharo rename MyImage Experiments | Rename MyImage to Experiments.
-# @example pharo rename | Choose an image from a list and type its new name.
 
 cmd_rename() {
     local name="" new_name="" count=0

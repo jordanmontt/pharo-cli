@@ -41,7 +41,7 @@ help_version() {
 
 # The full help: commands, settings and every example.
 help_overview() {
-    local command example
+    local command
     help_version
     echo
     printf '%s\n' "$PHARO_CLI_DESCRIPTION"
@@ -61,13 +61,8 @@ help_overview() {
     help_settings
     echo
     echo "Examples:"
-    for command in $(registry_commands); do
-        while IFS= read -r example; do
-            [ -n "$example" ] && help_example "$example"
-        done <<EOF
-$(registry_values "$command" example)
-EOF
-    done
+    # shellcheck disable=SC2046 # one word per command name
+    help_examples $(registry_commands)
     echo
     printf "Run '%s help <command>' for a command's arguments and options, or 'man %s'.\n" "$PHARO_CLI_COMMAND_NAME" "$PHARO_CLI_COMMAND_NAME"
     printf 'Source and issues: https://github.com/%s (MIT License)\n' "$PHARO_CLI_REPOSITORY"
@@ -84,9 +79,20 @@ $(config_table)
 EOF
 }
 
-# Prints an "example | description" header value as two lines.
-help_example() {
-    printf '  %s\n      %s\n' "${1%% | *}" "${1#* | }"
+# Prints the examples of the commands $@, each as a comment with its
+# description above the command line, separated by blank lines.
+help_examples() {
+    local command line first=true
+    for command in "$@"; do
+        while IFS= read -r line; do
+            [ -n "$line" ] || continue
+            [ "$first" = true ] || echo
+            first=false
+            printf '  # %s\n  %s\n' "${line#* | }" "${line%% | *}"
+        done <<EOF
+$(registry_values "$command" example)
+EOF
+    done
 }
 
 # The help of the command $1.
@@ -125,11 +131,7 @@ EOF
     if [ -n "$(registry_values "$command" example)" ]; then
         echo
         echo "Examples:"
-        while IFS= read -r line; do
-            [ -n "$line" ] && help_example "$line"
-        done <<EOF
-$(registry_values "$command" example)
-EOF
+        help_examples "$command"
     fi
 }
 

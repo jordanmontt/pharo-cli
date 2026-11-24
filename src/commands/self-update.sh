@@ -3,7 +3,7 @@
 # @alias up
 # @summary Update pharo-cli to its newest release.
 # @option --main Update to the newest development version (the main branch) instead.
-# @example pharo self-update | Update to the newest release.
+# @example pharo self-update --main | Try the development version (the main branch).
 
 cmd_self_update() {
     local channel=release before after
