@@ -13,10 +13,30 @@ setup() { sandbox_setup; }
     assert_line --regexp '^  self-update, up +Update pharo-cli to its newest release\.$'
 }
 
-@test "help shows every setting with its default" {
+@test "help shows every setting with its default on its own line, separated by blank lines" {
     run_pharo help
-    assert_line --regexp '^  imagesDir +Folder that holds one sub-folder per image\. Default: ~/Documents/PharoCliImages$'
-    assert_line --regexp '^  vmArgs +.*Default: \(empty\)$'
+    assert_output --partial "  imagesDir           Folder that holds one sub-folder per image.
+                      Default: ~/Documents/PharoCliImages
+
+  defaultTemplate     Template used by 'pharo new' when none is given: stable,
+                      latest, a Pharo version such as 14, or a template id.
+                      Default: stable
+"
+    assert_output --partial "  vmArgs              Arguments always passed to the VM, separated by spaces.
+                      Default: (empty)
+"
+}
+
+@test "the help fits in 80 columns, except default values, which are never split" {
+    local command
+    for command in "" config duplicate help import info list new open path remove rename run self-uninstall self-update templates version; do
+        run_pharo help $command
+        assert_success
+        run bash -c 'printf "%s\n" "$1" | awk "length > 80 && !/^ +Default: /"' _ "$output"
+        assert_output ""
+    done
+    run_pharo help
+    assert_line "                      Default: https://files.pharo.org/pharo-launcher/sources.list"
 }
 
 @test "help shows every example as a comment above its command, separated by blank lines" {
@@ -95,4 +115,14 @@ setup() { sandbox_setup; }
     assert_output "  a-very-long-label-here
           Text.
   short   Text."
+}
+
+@test "long text wraps at word boundaries, aligned with its column, and long words are not split" {
+    run_lib 'HELP_WIDTH=30; help_row "key" "one two three four five six seven eight nine" 10; help_wrap "" 0 "a https://example.org/a/very/long/url/that/does/not/fit b"'
+    assert_output "  key     one two three four
+          five six seven eight
+          nine
+a
+https://example.org/a/very/long/url/that/does/not/fit
+b"
 }

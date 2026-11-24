@@ -10,6 +10,7 @@
 
 - The command reference moved from the README to [docs/commands.md](docs/commands.md), still generated from the code. The README is shorter, with a FAQ and sections on upgrading from 1.x and uninstalling.
 - `pharo help` shows each example as a comment above its command, with a blank line between examples. Only examples that teach something beyond the usage line remain (19 instead of 39), and a test runs every example to check it is a valid command line.
+- The help wraps at 80 columns. Each setting shows its default on its own line, with a blank line between settings, and the three command summaries that wrapped were shortened.
 - `self-update` and the installer only refuse to update when tracked files were changed; untracked files no longer block them.
 
 ## 2.0.0

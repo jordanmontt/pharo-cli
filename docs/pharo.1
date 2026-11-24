@@ -54,7 +54,7 @@ The command to explain.
 .SS "import, im"
 .B pharo import <source> [<name>]
 .PP
-Add an existing image from a folder, a zip file or a zip URL.
+Add an existing image from a folder, a zip file or a URL.
 .PP
 A folder is copied, not moved. The image keeps its file names. When the image has no VM and has a pharo.version file, its VM is downloaded.
 .TP
@@ -193,7 +193,7 @@ The new name. Without it, you are asked for one.
 .SS "run, r"
 .B pharo run <image> [<script>] [options]
 .PP
-Run a Smalltalk script or expression in an image, without its UI.
+Run a script or an expression in an image, without its UI.
 .PP
 The VM runs headless in this terminal and its exit status is passed on. The image is not saved.
 .TP
@@ -236,7 +236,7 @@ Try the development version (the main branch).
 .SS "templates, t"
 .B pharo templates [<filter>] [options]
 .PP
-List the templates that 'pharo new' can create images from.
+List the templates that 'pharo new' can use.
 .PP
 Besides these ids, 'pharo new' accepts stable, latest, and a Pharo version such as 14. The list comes from Pharo Launcher's template list and is cached (see the templatesUrl and templatesCacheTtl settings).
 .TP
@@ -286,7 +286,7 @@ Template list in Pharo Launcher's sources.list format. Default: https://files.ph
 Seconds before the template list is downloaded again. Default: 86400
 .TP
 .B filesServer
-Server for Pharo images and VMs (change it to use a mirror). Default: https://files.pharo.org
+Server for Pharo images and VMs (set it to use a mirror). Default: https://files.pharo.org
 .SH FILES
 .TP
 .I ~/.config/pharo\-cli/config

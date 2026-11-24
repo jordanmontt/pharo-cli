@@ -63,7 +63,7 @@ Change them with `pharo config set <key> <value>`, or with an environment variab
 | `picker` | `auto` | How to choose an image when none is named: fzf, a numbered menu (select), or fzf when installed (auto). |
 | `templatesUrl` | `https://files.pharo.org/pharo-launcher/sources.list` | Template list in Pharo Launcher's sources.list format. |
 | `templatesCacheTtl` | `86400` | Seconds before the template list is downloaded again. |
-| `filesServer` | `https://files.pharo.org` | Server for Pharo images and VMs (change it to use a mirror). |
+| `filesServer` | `https://files.pharo.org` | Server for Pharo images and VMs (set it to use a mirror). |
 <!-- END GENERATED SETTINGS -->
 
 ## How images, templates and VMs work

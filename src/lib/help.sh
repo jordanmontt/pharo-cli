@@ -25,14 +25,41 @@ help_option_label() {
     printf '%s\n' "$label"
 }
 
-# Prints "  label   text" with the text aligned at column $3.
+# The width the help is wrapped to.
+HELP_WIDTH=80
+
+# Prints the text $3 wrapped to HELP_WIDTH columns. The first line starts
+# with $1, the others with $2 spaces. A word longer than the space left (a
+# URL) is not split.
+help_wrap() {
+    printf '%s\n' "$3" | awk -v first_prefix="$1" -v indent="$2" -v max="$HELP_WIDTH" '
+        function out(    row) {
+            row = (first ? first_prefix : sprintf("%" indent "s", "")) line
+            sub(/ +$/, "", row)
+            print row
+            first = 0
+            line = ""
+        }
+        {
+            first = 1
+            line = ""
+            for (i = 1; i <= NF; i++) {
+                if (line != "" && length(line) + 1 + length($i) > max - indent) out()
+                line = line == "" ? $i : line " " $i
+            }
+            out()
+        }'
+}
+
+# Prints "  label   text" with the text aligned at column $3 and wrapped. A
+# label too long for its column gets a line of its own.
 help_row() {
     local label="$1" text="$2" width="$3"
     if [ "${#label}" -ge $((width - 2)) ]; then
-        printf '  %s\n  %*s%s\n' "$label" $((width - 2)) '' "$text"
-    else
-        printf '  %-*s%s\n' $((width - 2)) "$label" "$text"
+        printf '  %s\n' "$label"
+        label=""
     fi
+    help_wrap "$(printf '  %-*s' $((width - 2)) "$label")" "$width" "$text"
 }
 
 help_version() {
@@ -44,7 +71,7 @@ help_overview() {
     local command
     help_version
     echo
-    printf '%s\n' "$PHARO_CLI_DESCRIPTION"
+    help_wrap "" 0 "$PHARO_CLI_DESCRIPTION"
     echo
     printf 'Usage: %s <command> [arguments] [options]\n' "$PHARO_CLI_COMMAND_NAME"
     echo
@@ -64,16 +91,21 @@ help_overview() {
     # shellcheck disable=SC2046 # one word per command name
     help_examples $(registry_commands)
     echo
-    printf "Run '%s help <command>' for a command's arguments and options, or 'man %s'.\n" "$PHARO_CLI_COMMAND_NAME" "$PHARO_CLI_COMMAND_NAME"
+    help_wrap "" 0 "Run '$PHARO_CLI_COMMAND_NAME help <command>' for one command's options, or 'man $PHARO_CLI_COMMAND_NAME'."
     printf 'Source and issues: https://github.com/%s (MIT License)\n' "$PHARO_CLI_REPOSITORY"
 }
 
-# Prints one settings row per key, with its default.
+# Prints each setting with its description, its default on the next line,
+# and a blank line between settings.
 help_settings() {
-    local key default description
+    local key default description first=true
     while IFS='|' read -r key default _ description; do
         [ -n "$default" ] || default="(empty)"
-        help_row "$key" "$description Default: $default" 22
+        [ "$first" = true ] || echo
+        first=false
+        help_row "$key" "$description" 22
+        # Not wrapped: a default is easier to read, and to copy, in one piece.
+        printf '%22s%s\n' "" "Default: $default"
     done <<EOF
 $(config_table)
 EOF
@@ -100,9 +132,9 @@ help_command() {
     local command="$1" line name description flags value aliases
     printf 'Usage: %s\n' "$(registry_usage "$command")"
     echo
-    printf '%s\n' "$(registry_value "$command" summary)"
+    help_wrap "" 0 "$(registry_value "$command" summary)"
     while IFS= read -r line; do
-        [ -n "$line" ] && { echo; printf '%s\n' "$line"; }
+        [ -n "$line" ] && { echo; help_wrap "" 0 "$line"; }
     done <<EOF
 $(registry_values "$command" description)
 EOF

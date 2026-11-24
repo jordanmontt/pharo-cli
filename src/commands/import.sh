@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # @command import
 # @alias im
-# @summary Add an existing image from a folder, a zip file or a zip URL.
+# @summary Add an existing image from a folder, a zip file or a URL.
 # @description A folder is copied, not moved. The image keeps its file names. When the image has no VM and has a pharo.version file, its VM is downloaded.
 # @arg <source:file> A folder or .zip file containing a .image file, or the http(s) URL of such a zip.
 # @arg [name:none] The name of the image. Without it, the folder or zip name is used.

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # @command run
 # @alias r
-# @summary Run a Smalltalk script or expression in an image, without its UI.
+# @summary Run a script or an expression in an image, without its UI.
 # @description The VM runs headless in this terminal and its exit status is passed on. The image is not saved.
 # @arg <image:image> The image to run.
 # @arg [script:file] A .st file to run. It is given to the image's st command-line handler.

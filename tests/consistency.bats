@@ -22,6 +22,16 @@ commands() {
     done
 }
 
+@test "every summary fits on one line of pharo help" {
+    # Commands are listed at column 22 of 80; a longer summary would wrap a
+    # word or two onto a line of their own.
+    local file summary
+    for file in "$PROJECT_ROOT"/src/commands/*.sh; do
+        summary=$(sed -n 's/^# @summary //p' "$file")
+        [ "${#summary}" -le 58 ] || fail "$(basename "$file"): the summary has ${#summary} characters, more than 58: $summary"
+    done
+}
+
 @test "every example is a valid command line" {
     # Examples are optional: a command has one only when it teaches something
     # the usage line does not. Each runs against a copy of pharo-cli, never

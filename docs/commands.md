@@ -65,7 +65,7 @@ Aliases: `h`
 pharo import <source> [<name>]
 ```
 
-Add an existing image from a folder, a zip file or a zip URL.
+Add an existing image from a folder, a zip file or a URL.
 
 A folder is copied, not moved. The image keeps its file names. When the image has no VM and has a pharo.version file, its VM is downloaded.
 
@@ -229,7 +229,7 @@ Aliases: `re`
 pharo run <image> [<script>] [options]
 ```
 
-Run a Smalltalk script or expression in an image, without its UI.
+Run a script or an expression in an image, without its UI.
 
 The VM runs headless in this terminal and its exit status is passed on. The image is not saved.
 
@@ -285,7 +285,7 @@ Examples:
 pharo templates [<filter>] [options]
 ```
 
-List the templates that 'pharo new' can create images from.
+List the templates that 'pharo new' can use.
 
 Besides these ids, 'pharo new' accepts stable, latest, and a Pharo version such as 14. The list comes from Pharo Launcher's template list and is cached (see the templatesUrl and templatesCacheTtl settings).
 
@@ -325,4 +325,4 @@ Change them with `pharo config set <key> <value>`, or with an environment variab
 | `picker` | `auto` | How to choose an image when none is named: fzf, a numbered menu (select), or fzf when installed (auto). |
 | `templatesUrl` | `https://files.pharo.org/pharo-launcher/sources.list` | Template list in Pharo Launcher's sources.list format. |
 | `templatesCacheTtl` | `86400` | Seconds before the template list is downloaded again. |
-| `filesServer` | `https://files.pharo.org` | Server for Pharo images and VMs (change it to use a mirror). |
+| `filesServer` | `https://files.pharo.org` | Server for Pharo images and VMs (set it to use a mirror). |
