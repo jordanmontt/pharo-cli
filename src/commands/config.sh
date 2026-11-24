@@ -11,12 +11,21 @@
 # @example pharo config | Show every setting.
 # @example pharo config set imagesDir ~/Pharo/images | Keep images in ~/Pharo/images.
 # @example pharo config get imagesDir | Print the images folder setting.
+# @example pharo config set vmArgs --logLevel=4 | Pass --logLevel=4 to the VM every time.
 # @example pharo config unset imagesDir | Go back to the default images folder.
 # @example pharo config reset | Go back to the defaults for every setting.
 
 cmd_config() {
     local yes=false count=0 action="" key="" value="" reason
     while [ $# -gt 0 ]; do
+        # The value of 'config set <key> <value>' is taken as it is, even
+        # when it starts with a dash (vmArgs values do).
+        if [ "$count" -eq 2 ] && [ "$action" = set ]; then
+            count=3
+            value="$1"
+            shift
+            continue
+        fi
         case "$1" in
             -y | --yes) yes=true ;;
             *)

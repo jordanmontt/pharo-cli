@@ -7,7 +7,7 @@ setup() { sandbox_setup; }
 
 @test "config with no action lists every setting with its origin" {
     write_config "picker=select"
-    run env PHARO_CLI_OPEN_MODE=background PATH="$SANDBOX_PATH" "$PHARO_BIN" config
+    run_in_sandbox PHARO_CLI_OPEN_MODE=background "$PHARO_BIN" config
     assert_success
     assert_line --regexp '^imagesDir +~/Documents/PharoCliImages +\(default\)$'
     assert_line --regexp '^picker +select +\(set\)$'
@@ -35,6 +35,16 @@ setup() { sandbox_setup; }
     assert_output "$HOME/Pharo images"
 }
 
+@test "config set takes a value starting with a dash as the value" {
+    run_pharo config set vmArgs --logLevel=4
+    assert_success
+    assert_output "vmArgs = --logLevel=4"
+    run_pharo config set vmArgs -y
+    assert_success
+    run_pharo config get vmArgs
+    assert_output -- "-y"
+}
+
 @test "config set rejects invalid values and leaves the file alone" {
     run_pharo config set openMode sideways
     assert_failure 1
@@ -43,7 +53,7 @@ setup() { sandbox_setup; }
 }
 
 @test "config set warns when an environment variable overrides the value" {
-    run env PHARO_CLI_PICKER=fzf PATH="$SANDBOX_PATH" "$PHARO_BIN" config set picker select
+    run_in_sandbox PHARO_CLI_PICKER=fzf "$PHARO_BIN" config set picker select
     assert_success
     assert_output --partial "PHARO_CLI_PICKER is set in the environment and overrides this value"
 }

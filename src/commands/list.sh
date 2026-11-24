@@ -2,9 +2,9 @@
 # @command list
 # @alias l
 # @alias ls
-# @summary List the images, most recently used first.
+# @summary List the images, most recently opened or created first.
 # @option -q --quiet Print only the image names, one per line.
-# @example pharo list | List the images with their Pharo version and when they were last used.
+# @example pharo list | List the images with their Pharo version and when they were last opened.
 # @example pharo list --quiet | Print only the image names.
 
 cmd_list() {
@@ -29,7 +29,7 @@ cmd_list() {
         return "$EXIT_OK"
     fi
     {
-        printf 'NAME\tPHARO\tLAST USED\n'
+        printf 'NAME\tPHARO\tLAST OPENED\n'
         while IFS= read -r name; do
             dir=$(image_path "$name")
             if version=$(image_pharo_version "$dir"); then
