@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.0.0
+## 2.0.0
 
 A rewrite of pharo-cli: every command is a real command with arguments, the help and Tab completion are generated from the code, every default can be changed without editing the code, and images come from the same templates and VMs as Pharo Launcher instead of zeroconf. It runs on macOS and Linux with no dependency beyond `bash`, `curl` and `unzip`.
 

@@ -141,7 +141,7 @@ rc_block() {
 }
 
 # Writes the block into the startup file $1, replacing an older one, and
-# removes the PATH line written by installers before 1.0.
+# removes the PATH line written by installers before 2.0.
 update_rc_file() {
     local file="$1" tmp old_line
     old_line="export PATH=\"\$PATH:$INSTALL_DIR/bin\""

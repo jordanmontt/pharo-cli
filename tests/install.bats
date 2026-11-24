@@ -55,7 +55,7 @@ source \"$HOME/.pharo-cli/completions/pharo.bash\"
     assert_output --partial "Installed pharo-cli 1.0.0."
 }
 
-@test "running it again updates and keeps one block, removing the pre-1.0 PATH line" {
+@test "running it again updates and keeps one block, removing the pre-2.0 PATH line" {
     git -C "$ORIGIN" tag v1.0.0
     printf '%s\n' "# mine" "export PATH=\"\$PATH:$HOME/.pharo-cli/bin\"" "alias ll='ls -l'" >"$HOME/.zshrc"
     run_installer
@@ -72,7 +72,7 @@ source \"$HOME/.pharo-cli/completions/pharo.bash\"
 alias ll='ls -l'"
 }
 
-@test "updating a pre-1.0 clone on main moves it to the newest release" {
+@test "updating a pre-2.0 clone on main moves it to the newest release" {
     git clone -q "$ORIGIN" "$HOME/.pharo-cli"
     echo 1.0.1 >"$ORIGIN/VERSION" && git -C "$ORIGIN" commit -q -am fix && git -C "$ORIGIN" tag v1.0.1
     run_installer
