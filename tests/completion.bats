@@ -140,7 +140,7 @@ background"
 bash_complete() {
     mkdir -p "$SANDBOX/bin"
     ln -sf "$PHARO_BIN" "$SANDBOX/bin/pharo"
-    run env PATH="$SANDBOX/bin:$SANDBOX_PATH" /bin/bash -c '
+    run_in_sandbox PATH="$SANDBOX/bin:$SANDBOX_PATH" /bin/bash -c '
         . "$1"
         read -r -a COMP_WORDS <<<"$2"
         case "$2" in *" ") COMP_WORDS[${#COMP_WORDS[@]}]="" ;; esac
@@ -176,7 +176,7 @@ bash_complete() {
     command -v zsh >/dev/null || skip "zsh is not installed"
     mkdir -p "$SANDBOX/bin"
     ln -sf "$PHARO_BIN" "$SANDBOX/bin/pharo"
-    run env PATH="$SANDBOX/bin:$SANDBOX_PATH" "$(command -v zsh)" -f -c '
+    run_in_sandbox PATH="$SANDBOX/bin:$SANDBOX_PATH" "$(command -v zsh)" -f -c '
         autoload -U compinit && compinit -u -D
         autoload -U +X bashcompinit && bashcompinit
         source "$1"

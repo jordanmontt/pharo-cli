@@ -96,7 +96,7 @@ pharo"
     else
         export FAKE_OS=Linux FAKE_ARCH=x86_64
     fi
-    run env TZ=UTC PATH="$SANDBOX_PATH" PHARO_CLI_ROOT="$PROJECT_ROOT" bash -c '. "$PHARO_CLI_ROOT/src/main.sh"; os_load; os_format_date 1764000000'
+    run_in_sandbox TZ=UTC PHARO_CLI_ROOT="$PROJECT_ROOT" /bin/bash -c '. "$PHARO_CLI_ROOT/src/main.sh"; os_load; os_format_date 1764000000'
     assert_success
     assert_output "2025-11-24 16:00"
 }

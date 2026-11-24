@@ -69,7 +69,7 @@ setup() { sandbox_setup; }
 @test "works when called through a symlink, like the installed one" {
     mkdir -p "$SANDBOX/bin"
     ln -s "$PHARO_BIN" "$SANDBOX/bin/pharo"
-    run env PATH="$SANDBOX_PATH" "$SANDBOX/bin/pharo" version
+    run_in_sandbox "$SANDBOX/bin/pharo" version
     assert_success
     assert_output "pharo-cli $(cat "$PROJECT_ROOT/VERSION")"
 }
@@ -78,7 +78,7 @@ setup() { sandbox_setup; }
     mkdir -p "$SANDBOX/a/b"
     ln -s "$PHARO_BIN" "$SANDBOX/a/pharo-target"
     ln -s ../pharo-target "$SANDBOX/a/b/pharo"
-    run env PATH="$SANDBOX_PATH" "$SANDBOX/a/b/pharo" version
+    run_in_sandbox "$SANDBOX/a/b/pharo" version
     assert_success
 }
 

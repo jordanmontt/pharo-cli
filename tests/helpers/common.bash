@@ -26,7 +26,9 @@ sandbox_setup() {
     mkdir -p "$SANDBOX"
     export HOME="$SANDBOX/home"
     mkdir -p "$HOME"
-    unset XDG_CONFIG_HOME XDG_CACHE_HOME XDG_DATA_HOME
+    # Variables from the developer's shell that could point outside the
+    # sandbox. Runs also use a clean environment (see sandbox_env).
+    unset XDG_CONFIG_HOME XDG_CACHE_HOME XDG_DATA_HOME ZDOTDIR
     local variable
     for variable in $(env | sed -n 's/^\(PHARO_CLI_[A-Z_]*\)=.*/\1/p'); do
         unset "$variable"
@@ -70,21 +72,56 @@ uninstall_fake() {
     done
 }
 
-# Runs pharo in the sandbox, through bats' run.
+# Variables passed into the sandbox; everything else is left out, so the
+# developer's environment (ZDOTDIR, XDG_*, PHARO_CLI_*...) cannot leak in.
+SANDBOX_VARIABLES="HOME FAKE_OS FAKE_ARCH FAKE_HTTP_ROOT FAKE_LOG FAKE_TRASH FAKE_FZF_CHOICE FAKE_VM_EXIT TZ GIT_AUTHOR_NAME GIT_AUTHOR_EMAIL GIT_COMMITTER_NAME GIT_COMMITTER_EMAIL GIT_CONFIG_GLOBAL GIT_CONFIG_NOSYSTEM"
+
+# Prints "env -i NAME=value..." arguments for a clean sandbox environment,
+# with PATH set to the sandbox PATH.
+sandbox_env() {
+    local variable
+    printf '%s\n' -i "PATH=$SANDBOX_PATH"
+    for variable in $SANDBOX_VARIABLES; do
+        if [ -n "${!variable+set}" ]; then
+            printf '%s=%s\n' "$variable" "${!variable}"
+        fi
+    done
+}
+
+# Runs a command in the clean sandbox environment, through bats' run. Extra
+# NAME=value words before the command are added to the environment.
+run_in_sandbox() {
+    local -a environment
+    local line
+    environment=()
+    while IFS= read -r line; do
+        environment[${#environment[@]}]="$line"
+    done < <(sandbox_env)
+    run env "${environment[@]}" "$@"
+}
+
+# Runs pharo in the sandbox.
 run_pharo() {
-    run env PATH="$SANDBOX_PATH" "$PHARO_BIN" "$@"
+    run_in_sandbox "$PHARO_BIN" "$@"
 }
 
 # Runs pharo in the sandbox with the text $1 on stdin.
 run_pharo_with_input() {
     local input="$1"
     shift
-    run bash -c 'printf "%s" "$1" | env PATH="$2" "$3" "${@:4}"' _ "$input" "$SANDBOX_PATH" "$PHARO_BIN" "$@"
+    run_in_sandbox /bin/bash -c 'printf "%s" "$1" | "$2" "${@:3}"' _ "$input" "$PHARO_BIN" "$@"
 }
 
-# Runs Bash code with pharo-cli's functions loaded, in the sandbox.
+# Runs Bash code with pharo-cli's functions loaded, in the sandbox. Extra
+# NAME=value words before the code are added to the environment.
 run_lib() {
-    run env PATH="$SANDBOX_PATH" PHARO_CLI_ROOT="$PROJECT_ROOT" bash -c '
+    local -a extra
+    extra=()
+    while [ $# -gt 1 ]; do
+        extra[${#extra[@]}]="$1"
+        shift
+    done
+    run_in_sandbox ${extra[@]+"${extra[@]}"} PHARO_CLI_ROOT="$PROJECT_ROOT" /bin/bash -c '
         set -u
         . "$PHARO_CLI_ROOT/src/main.sh"
         registry_load

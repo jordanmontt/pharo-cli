@@ -35,10 +35,10 @@ publish() {
     git -C "$SANDBOX/install" checkout -q v1.0.0
     publish 1.1.0 tag
     publish 1.2.0-dev
-    run env PATH="$SANDBOX_PATH" "$SANDBOX/install/bin/pharo" self-update
+    run_in_sandbox "$SANDBOX/install/bin/pharo" self-update
     assert_success
     assert_output "Updated pharo-cli from 1.0.0 to 1.1.0."
-    run env PATH="$SANDBOX_PATH" "$SANDBOX/install/bin/pharo" self-update
+    run_in_sandbox "$SANDBOX/install/bin/pharo" self-update
     assert_output "pharo-cli 1.1.0 is up to date."
 }
 
@@ -47,7 +47,7 @@ publish() {
     git -C "$SANDBOX/origin" tag v1.9.0
     git clone -q "$SANDBOX/origin" "$SANDBOX/install"
     publish 1.10.0 tag
-    run env PATH="$SANDBOX_PATH" "$SANDBOX/install/bin/pharo" self-update
+    run_in_sandbox "$SANDBOX/install/bin/pharo" self-update
     assert_output "Updated pharo-cli from 1.9.0 to 1.10.0."
 }
 
@@ -55,7 +55,7 @@ publish() {
     make_release_repo "$SANDBOX/origin" 1.0.0
     git clone -q "$SANDBOX/origin" "$SANDBOX/install"
     publish 1.1.0-dev
-    run env PATH="$SANDBOX_PATH" "$SANDBOX/install/bin/pharo" self-update --main
+    run_in_sandbox "$SANDBOX/install/bin/pharo" self-update --main
     assert_success
     assert_output "Updated pharo-cli from 1.0.0 to 1.1.0-dev."
 }
@@ -65,7 +65,7 @@ publish() {
     git -C "$SANDBOX/origin" tag v1.0.0
     git clone -q "$SANDBOX/origin" "$SANDBOX/install"
     echo "edit" >>"$SANDBOX/install/VERSION"
-    run env PATH="$SANDBOX_PATH" "$SANDBOX/install/bin/pharo" self-update
+    run_in_sandbox "$SANDBOX/install/bin/pharo" self-update
     assert_failure 1
     assert_output --partial "has local changes"
 }
@@ -79,7 +79,7 @@ publish() {
     echo 1.1.0 >"$SANDBOX/release/pharo-cli-1.1.0/VERSION"
     tar -czf "$FAKE_HTTP_ROOT/github.com/jordanmontt/pharo-cli/archive/refs/tags/v1.1.0.tar.gz" -C "$SANDBOX/release" pharo-cli-1.1.0
     printf '{\n  "url": "x",\n  "tag_name": "v1.1.0",\n  "name": "v1.1.0"\n}\n' >"$FAKE_HTTP_ROOT/api.github.com/repos/jordanmontt/pharo-cli/releases/latest"
-    run env PATH="$SANDBOX_PATH" "$SANDBOX/install/bin/pharo" self-update
+    run_in_sandbox "$SANDBOX/install/bin/pharo" self-update
     assert_success
     assert_output "Updated pharo-cli from 1.0.0 to 1.1.0."
 }
@@ -88,10 +88,10 @@ publish() {
     mkdir -p "$SANDBOX/install"
     cp -R "$PROJECT_ROOT/bin" "$PROJECT_ROOT/src" "$SANDBOX/install/"
     echo 1.0.0 >"$SANDBOX/install/VERSION"
-    run env PATH="$SANDBOX_PATH" "$SANDBOX/install/bin/pharo" self-update
+    run_in_sandbox "$SANDBOX/install/bin/pharo" self-update
     assert_failure 1
     assert_output --partial "could not find the newest release"
-    run env PATH="$SANDBOX_PATH" "$SANDBOX/install/bin/pharo" self-update --main
+    run_in_sandbox "$SANDBOX/install/bin/pharo" self-update --main
     assert_failure 1
     assert_output --partial "could not download https://github.com/jordanmontt/pharo-cli/archive/refs/heads/main.tar.gz"
     run cat "$SANDBOX/install/VERSION"

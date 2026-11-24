@@ -37,7 +37,7 @@ file"
 
 @test "an environment variable overrides the config file" {
     write_config "openMode=background"
-    run env PHARO_CLI_OPEN_MODE=foreground PATH="$SANDBOX_PATH" PHARO_CLI_ROOT="$PROJECT_ROOT" bash -c '. "$PHARO_CLI_ROOT/src/main.sh"; config_get openMode; config_origin openMode'
+    run_in_sandbox PHARO_CLI_OPEN_MODE=foreground PHARO_CLI_ROOT="$PROJECT_ROOT" /bin/bash -c '. "$PHARO_CLI_ROOT/src/main.sh"; config_get openMode; config_origin openMode'
     assert_output "foreground
 env"
 }
@@ -50,7 +50,7 @@ PHARO_CLI_VM_ARGS"
 }
 
 @test "the config file location follows XDG_CONFIG_HOME" {
-    run env XDG_CONFIG_HOME="$SANDBOX/xdg" PATH="$SANDBOX_PATH" PHARO_CLI_ROOT="$PROJECT_ROOT" bash -c '. "$PHARO_CLI_ROOT/src/main.sh"; config_file'
+    run_in_sandbox XDG_CONFIG_HOME="$SANDBOX/xdg" PHARO_CLI_ROOT="$PROJECT_ROOT" /bin/bash -c '. "$PHARO_CLI_ROOT/src/main.sh"; config_file'
     assert_output "$SANDBOX/xdg/pharo-cli/config"
 }
 
@@ -59,7 +59,7 @@ PHARO_CLI_VM_ARGS"
     run_lib 'config_get imagesDir; config_raw imagesDir'
     assert_output "$HOME/my images
 ~/my images"
-    run env PHARO_CLI_IMAGES_DIR="~/other" PATH="$SANDBOX_PATH" PHARO_CLI_ROOT="$PROJECT_ROOT" bash -c '. "$PHARO_CLI_ROOT/src/main.sh"; config_get imagesDir'
+    run_in_sandbox PHARO_CLI_IMAGES_DIR="~/other" PHARO_CLI_ROOT="$PROJECT_ROOT" /bin/bash -c '. "$PHARO_CLI_ROOT/src/main.sh"; config_get imagesDir'
     assert_output "$HOME/other"
 }
 

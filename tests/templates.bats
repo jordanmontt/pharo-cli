@@ -106,7 +106,7 @@ Pharo Mooc$(printf '\037')https://mooc.pharo.org/image/PharoWeb.zip"
 }
 
 @test "the cache follows XDG_CACHE_HOME" {
-    run env XDG_CACHE_HOME="$SANDBOX/cache" PATH="$SANDBOX_PATH" PHARO_CLI_ROOT="$PROJECT_ROOT" bash -c '. "$PHARO_CLI_ROOT/src/main.sh"; os_load; templates_list >/dev/null'
+    run_in_sandbox XDG_CACHE_HOME="$SANDBOX/cache" PHARO_CLI_ROOT="$PROJECT_ROOT" /bin/bash -c '. "$PHARO_CLI_ROOT/src/main.sh"; os_load; templates_list >/dev/null'
     [ -f "$SANDBOX/cache/pharo-cli/sources.list" ]
 }
 

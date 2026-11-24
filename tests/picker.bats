@@ -25,7 +25,7 @@ Second"
 
 @test "auto uses a numbered menu without fzf" {
     uninstall_fake fzf
-    run env PATH="$SANDBOX_PATH" PHARO_CLI_ROOT="$PROJECT_ROOT" bash -c '. "$PHARO_CLI_ROOT/src/main.sh"; os_load; printf "2\n" | pick_image Open 2>"$FAKE_LOG/menu"'
+    run_in_sandbox PHARO_CLI_ROOT="$PROJECT_ROOT" /bin/bash -c '. "$PHARO_CLI_ROOT/src/main.sh"; os_load; printf "2\n" | pick_image Open 2>"$FAKE_LOG/menu"'
     assert_success
     assert_output Second
     run cat "$FAKE_LOG/menu"
@@ -36,14 +36,14 @@ Second"
 
 @test "picker=select uses the menu even with fzf installed" {
     write_config "picker=select"
-    run env PATH="$SANDBOX_PATH" PHARO_CLI_ROOT="$PROJECT_ROOT" bash -c '. "$PHARO_CLI_ROOT/src/main.sh"; os_load; printf "1\n" | pick_image Open 2>/dev/null'
+    run_in_sandbox PHARO_CLI_ROOT="$PROJECT_ROOT" /bin/bash -c '. "$PHARO_CLI_ROOT/src/main.sh"; os_load; printf "1\n" | pick_image Open 2>/dev/null'
     assert_output First
     [ ! -e "$FAKE_LOG/fzf.log" ]
 }
 
 @test "the menu asks again after an invalid choice" {
     write_config "picker=select"
-    run env PATH="$SANDBOX_PATH" PHARO_CLI_ROOT="$PROJECT_ROOT" bash -c '. "$PHARO_CLI_ROOT/src/main.sh"; os_load; printf "9\n1\n" | pick_image Open 2>"$FAKE_LOG/menu"'
+    run_in_sandbox PHARO_CLI_ROOT="$PROJECT_ROOT" /bin/bash -c '. "$PHARO_CLI_ROOT/src/main.sh"; os_load; printf "9\n1\n" | pick_image Open 2>"$FAKE_LOG/menu"'
     assert_success
     assert_output First
     run cat "$FAKE_LOG/menu"
@@ -52,7 +52,7 @@ Second"
 
 @test "the menu is cancelled when the input ends" {
     write_config "picker=select"
-    run env PATH="$SANDBOX_PATH" PHARO_CLI_ROOT="$PROJECT_ROOT" bash -c '. "$PHARO_CLI_ROOT/src/main.sh"; os_load; pick_image Open </dev/null'
+    run_in_sandbox PHARO_CLI_ROOT="$PROJECT_ROOT" /bin/bash -c '. "$PHARO_CLI_ROOT/src/main.sh"; os_load; pick_image Open </dev/null'
     assert_failure 1
     assert_output --partial "Operation cancelled."
 }
@@ -61,7 +61,7 @@ Second"
     write_config "picker=select"
     create_image "My *"
     set_image_metadata "My *" "lastOpened=3000"
-    run env PATH="$SANDBOX_PATH" PHARO_CLI_ROOT="$PROJECT_ROOT" bash -c '. "$PHARO_CLI_ROOT/src/main.sh"; os_load; printf "1\n" | pick_image Open 2>/dev/null'
+    run_in_sandbox PHARO_CLI_ROOT="$PROJECT_ROOT" /bin/bash -c '. "$PHARO_CLI_ROOT/src/main.sh"; os_load; printf "1\n" | pick_image Open 2>/dev/null'
     assert_output "My *"
 }
 

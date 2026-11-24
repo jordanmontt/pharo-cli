@@ -36,7 +36,7 @@ eval
 Img.image
 st
 --quit
-$SANDBOX/work/my script.st"
+$(cd "$SANDBOX/work" && pwd -P)/my script.st"
 }
 
 @test "VM arguments come after --headless and the vmArgs setting" {
@@ -80,7 +80,7 @@ eval
 @test "an image without a VM gets one first, with messages on stderr" {
     serve_pharo 140
     create_image NoVm --no-vm
-    run bash -c 'env PATH="$1" "$2" run NoVm --eval 1 2>/dev/null' _ "$SANDBOX_PATH" "$PHARO_BIN"
+    run_in_sandbox /bin/bash -c '"$1" run NoVm --eval 1 2>/dev/null' _ "$PHARO_BIN"
     assert_success
     assert_output "fake vm ran"
 }
