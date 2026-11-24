@@ -40,7 +40,7 @@ self_update_git() {
         git -C "$root" merge --quiet --ff-only origin/main || die "could not update the main branch"
         return 0
     fi
-    tag=$(git -C "$root" tag --list 'v*' --sort=-v:refname | head -n 1)
+    tag=$(git -C "$root" tag --list 'v*' --sort=-v:refname | sed -n 1p)
     [ -n "$tag" ] || die "no release found"
     git -C "$root" checkout --quiet "$tag" || die "could not switch to $tag"
 }
@@ -53,7 +53,7 @@ self_update_archive() {
         url="https://github.com/$PHARO_CLI_REPOSITORY/archive/refs/heads/main.tar.gz"
     else
         tag=$(http_get "https://api.github.com/repos/$PHARO_CLI_REPOSITORY/releases/latest" |
-            sed -n 's/.*"tag_name"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' | head -n 1)
+            sed -n 's/.*"tag_name"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' | sed -n 1p)
         [ -n "$tag" ] || die "could not find the newest release"
         url="https://github.com/$PHARO_CLI_REPOSITORY/archive/refs/tags/$tag.tar.gz"
     fi

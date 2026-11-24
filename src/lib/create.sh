@@ -27,7 +27,7 @@ create_staging() {
 # (zips may have the files at the top or inside one folder).
 create_image_folder() {
     local file
-    file=$(find "$1" -maxdepth 2 -name '*.image' -type f | sort | head -n 1)
+    file=$(find "$1" -maxdepth 2 -name '*.image' -type f | sort | sed -n 1p)
     [ -n "$file" ] || return 1
     dirname "$file"
 }

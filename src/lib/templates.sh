@@ -108,7 +108,7 @@ templates_resolve() {
     case "$spec" in
         stable)
             printf '%s\n' "$entries" |
-                awk -F "$PHARO_CLI_SEP" -v OFS="$PHARO_CLI_SEP" '$2 ~ /^Pharo [0-9.]+ - 64bit \(stable\)$/ { print $2, $3; found = 1; exit } END { exit !found }'
+                awk -F "$PHARO_CLI_SEP" -v OFS="$PHARO_CLI_SEP" '!found && $2 ~ /^Pharo [0-9.]+ - 64bit \(stable\)$/ { print $2, $3; found = 1 } END { exit !found }'
             ;;
         latest)
             printf '%s\n' "$entries" |
@@ -121,7 +121,7 @@ templates_resolve() {
             ;;
         *)
             printf '%s\n' "$entries" |
-                awk -F "$PHARO_CLI_SEP" -v OFS="$PHARO_CLI_SEP" -v spec="$spec" '$1 == spec || $2 == spec { print $2, $3; found = 1; exit } END { exit !found }'
+                awk -F "$PHARO_CLI_SEP" -v OFS="$PHARO_CLI_SEP" -v spec="$spec" '!found && ($1 == spec || $2 == spec) { print $2, $3; found = 1 } END { exit !found }'
             ;;
     esac
 }

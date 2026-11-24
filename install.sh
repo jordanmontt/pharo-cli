@@ -50,7 +50,7 @@ check_requirements() {
 
 # The newest v* tag of the git clone in $1, or nothing.
 newest_tag() {
-    git -C "$1" tag --list 'v*' --sort=-v:refname | head -n 1
+    git -C "$1" tag --list 'v*' --sort=-v:refname | sed -n 1p
 }
 
 install_with_git() {
@@ -79,7 +79,7 @@ install_from_archive() {
     local ref="$REF" url tmp
     if [ -z "$ref" ]; then
         ref=$(curl -fsSL "https://api.github.com/repos/$PHARO_CLI_REPOSITORY/releases/latest" 2>/dev/null |
-            sed -n 's/.*"tag_name"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' | head -n 1)
+            sed -n 's/.*"tag_name"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' | sed -n 1p)
         [ -n "$ref" ] || ref=main
     fi
     if [ "$ref" = main ]; then

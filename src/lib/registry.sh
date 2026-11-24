@@ -50,14 +50,14 @@ registry_values() {
 
 # Prints the first value of the tag $2 for the command $1.
 registry_value() {
-    registry_values "$1" "$2" | head -n 1
+    registry_values "$1" "$2" | sed -n 1p
 }
 
 # Prints the command named or aliased $1. Fails when there is none.
 registry_resolve() {
     local resolved
     resolved=$(printf '%s\n' "$PHARO_CLI_REGISTRY" |
-        awk -F '\t' -v word="$1" '($2 == "command" || $2 == "alias") && $3 == word { print $1; exit }')
+        awk -F '\t' -v word="$1" '!found && ($2 == "command" || $2 == "alias") && $3 == word { print $1; found = 1 }')
     [ -n "$resolved" ] || return 1
     printf '%s\n' "$resolved"
 }

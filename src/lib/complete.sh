@@ -89,7 +89,7 @@ complete_option_takes_value() {
 # takes none.
 complete_option_kind() {
     registry_options "$1" | awk -F "$PHARO_CLI_SEP" -v word="$2" '
-        $2 != "" { n = split($1, flags, " "); for (i = 1; i <= n; i++) if (flags[i] == word) { kind = $2; sub(/^[^:]*:/, "", kind); print kind; found = 1; exit } }
+        !found && $2 != "" { n = split($1, flags, " "); for (i = 1; i <= n; i++) if (!found && flags[i] == word) { kind = $2; sub(/^[^:]*:/, "", kind); print kind; found = 1 } }
         END { exit !found }'
 }
 

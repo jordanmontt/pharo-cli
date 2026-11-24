@@ -82,3 +82,12 @@ commands() {
     run bash -c 'grep -HnE "declare -A|local -A|mapfile|readarray|\\$\\{[a-zA-Z_]+(,,|\\^\\^)\\}|&>>|\\|&|coproc" "$@" | grep -vE "^[^:]+:[0-9]+:[[:space:]]*#"' _ "$PROJECT_ROOT"/bin/pharo "$PROJECT_ROOT"/src/*.sh "$PROJECT_ROOT"/src/*/*.sh "$PROJECT_ROOT"/completions/pharo.bash "$PROJECT_ROOT"/install.sh
     assert_output ""
 }
+
+@test "no pipe ends with a reader that stops early" {
+    # A reader that stops before the end of its input (head, grep -q, awk's
+    # exit) breaks the pipe. Where SIGPIPE is ignored, as on some CI machines,
+    # the writer then prints "Broken pipe" errors. Readers must consume all
+    # their input: sed -n 1p, grep ... >/dev/null, awk with a found flag.
+    run bash -c 'grep -HnE "\\| *head|grep -[a-zA-Z]*q|exit *\\}" "$@" | grep -vE "^[^:]+:[0-9]+:[[:space:]]*#"' _ "$PROJECT_ROOT"/bin/pharo "$PROJECT_ROOT"/src/*.sh "$PROJECT_ROOT"/src/*/*.sh "$PROJECT_ROOT"/completions/pharo.bash "$PROJECT_ROOT"/install.sh
+    assert_output ""
+}

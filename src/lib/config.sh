@@ -36,7 +36,7 @@ config_keys() {
 
 # Succeeds when $1 is a setting key.
 config_is_key() {
-    config_keys | grep -qx -- "$1"
+    config_keys | grep -x -- "$1" >/dev/null
 }
 
 # Prints the field $2 (2 default, 3 type, 4 description) of the key $1.
@@ -141,7 +141,7 @@ config_validate() {
             esac
             ;;
         enum:*)
-            if ! printf '%s\n' "${type#enum:}" | tr ',' '\n' | grep -qx -- "$value"; then
+            if ! printf '%s\n' "${type#enum:}" | tr ',' '\n' | grep -x -- "$value" >/dev/null; then
                 echo "'$key' must be one of: $(printf '%s' "${type#enum:}" | sed 's/,/, /g')" >&2
                 return 1
             fi

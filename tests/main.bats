@@ -88,3 +88,16 @@ setup() { sandbox_setup; }
     assert_failure 1
     assert_output --partial "unsupported operating system: MINGW64_NT"
 }
+
+@test "with SIGPIPE ignored, as on some CI machines, nothing reports a broken pipe" {
+    # Ignored signals stay ignored across exec, so pharo runs like on such a
+    # machine. Repeated because a broken pipe depends on timing.
+    local i
+    for i in 1 2 3 4 5; do
+        run_in_sandbox /bin/bash -c 'trap "" PIPE
+            "$1" __complete 2 pharo help r && "$1" __complete 2 pharo open --vm-arg && "$1" help rename >/dev/null && "$1" config get vmStatus' _ "$PHARO_BIN"
+        assert_success
+        refute_output --partial "Broken pipe"
+        refute_output --partial "write error"
+    done
+}
