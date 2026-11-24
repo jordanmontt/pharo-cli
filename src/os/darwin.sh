@@ -37,7 +37,3 @@ os_trash() {
         osascript -e "tell application \"Finder\" to delete POSIX file \"$escaped\"" >/dev/null
     fi
 }
-
-os_format_date() {
-    date -r "$1" '+%Y-%m-%d %H:%M'
-}

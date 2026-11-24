@@ -173,7 +173,9 @@ alias ll='ls -l'"
 @test "zsh: the installed block puts pharo on the PATH and registers completion" {
     command -v zsh >/dev/null || skip "zsh is not installed"
     run_installer
-    run_in_sandbox "$(command -v zsh)" -f -c 'source "$HOME/.zshrc"; whence -p pharo; complete -p pharo'
+    # compaudit is stubbed: on CI machines zsh's own folders are group-writable,
+    # and compinit then asks a question that a test cannot answer.
+    run_in_sandbox "$(command -v zsh)" -f -c 'compaudit() { return 0; }; source "$HOME/.zshrc"; whence -p pharo; complete -p pharo'
     assert_success
     assert_line "$HOME/.local/bin/pharo"
     assert_line "complete -F _pharo_cli_complete pharo"

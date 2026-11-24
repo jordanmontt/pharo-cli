@@ -36,7 +36,3 @@ os_trash() {
         trash-put -- "$1"
     fi
 }
-
-os_format_date() {
-    date -d "@$1" '+%Y-%m-%d %H:%M'
-}

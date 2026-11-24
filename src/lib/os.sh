@@ -8,7 +8,6 @@
 #   os_vm_binary          path of the VM executable inside an image's pharo-vm/
 #   os_has_trash          succeeds when files can be moved to a trash
 #   os_trash <path>       moves <path> to the trash
-#   os_format_date <secs> formats seconds since the epoch as "YYYY-MM-DD HH:MM"
 
 # Loads the implementation for the running OS.
 os_load() {

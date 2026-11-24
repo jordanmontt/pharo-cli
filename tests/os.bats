@@ -89,14 +89,13 @@ pharo"
     assert_failure
 }
 
-@test "dates are formatted on both systems" {
-    # GNU and BSD date differ; only the one matching this machine can run.
-    if date -r 0 >/dev/null 2>&1; then
-        export FAKE_OS=Darwin
-    else
-        export FAKE_OS=Linux FAKE_ARCH=x86_64
-    fi
-    run_in_sandbox TZ=UTC PHARO_CLI_ROOT="$PROJECT_ROOT" /bin/bash -c '. "$PHARO_CLI_ROOT/src/main.sh"; os_load; os_format_date 1764000000'
-    assert_success
-    assert_output "2025-11-24 16:00"
+@test "dates are formatted with the installed date, whatever the OS" {
+    # GNU date (Linux, or coreutils on macOS) and BSD date take different
+    # flags; the same date comes out with either OS faked.
+    local os
+    for os in Darwin Linux; do
+        run_in_sandbox FAKE_OS=$os FAKE_ARCH=x86_64 TZ=UTC PHARO_CLI_ROOT="$PROJECT_ROOT" /bin/bash -c '. "$PHARO_CLI_ROOT/src/main.sh"; os_load; format_date 1764000000'
+        assert_success
+        assert_output "2025-11-24 16:00"
+    done
 }

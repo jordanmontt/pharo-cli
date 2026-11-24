@@ -37,7 +37,7 @@ cmd_list() {
             else
                 version="?"
             fi
-            last=$(image_meta_get "$dir" lastOpened) && last=$(os_format_date "$last") || last="never opened"
+            last=$(image_meta_get "$dir" lastOpened) && last=$(format_date "$last") || last="never opened"
             printf '%s\t%s\t%s\n' "$name" "$version" "$last"
         done <<NAMES
 $names

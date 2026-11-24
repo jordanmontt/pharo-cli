@@ -90,6 +90,13 @@ has_command() {
     command -v "$1" >/dev/null 2>&1
 }
 
+# Formats $1, seconds since the epoch, as "YYYY-MM-DD HH:MM". GNU date (Linux,
+# or coreutils first in PATH on macOS) takes -d @secs, BSD date takes -r secs;
+# the installed date decides, not the OS.
+format_date() {
+    date -d "@$1" '+%Y-%m-%d %H:%M' 2>/dev/null || date -r "$1" '+%Y-%m-%d %H:%M'
+}
+
 # The version of pharo-cli, read from the VERSION file at the project root.
 pharo_cli_version() {
     local version

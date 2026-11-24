@@ -19,7 +19,7 @@ setup() {
     assert_output --partial "Created the image 'MyImage' in $IMAGES_DIR/MyImage"
     assert_output --partial "Opening 'MyImage'..."
     assert_output --partial "fake vm ran"
-    run ls "$IMAGES_DIR/MyImage"
+    run env LC_ALL=C ls "$IMAGES_DIR/MyImage"
     assert_output "MyImage.changes
 MyImage.image
 Pharo14.0-64bit-abc123.sources
@@ -49,7 +49,7 @@ pharo.version"
     run_pharo new --no-open
     assert_success
     assert_output --partial "Downloading Pharo 14.0 - 64bit (stable): https://files.pharo.org/image/140/latest-64.zip"
-    run ls "$IMAGES_DIR"
+    run env LC_ALL=C ls "$IMAGES_DIR"
     assert_output --regexp '^Pharo14-[0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9]{2}h[0-9]{2}$'
 }
 
@@ -72,7 +72,7 @@ pharo.version"
     run_pharo new 14 --no-open
     run_pharo new 14 --no-open
     assert_success
-    run ls "$IMAGES_DIR"
+    run env LC_ALL=C ls "$IMAGES_DIR"
     assert_line --regexp '^Pharo14-.*h[0-9]{2}$'
     assert_line --regexp '^Pharo14-.*h[0-9]{2}-2$'
 }
@@ -87,7 +87,7 @@ pharo.version"
 @test "one argument that is a template is the template" {
     run_pharo new 13 --no-open
     assert_success
-    run ls "$IMAGES_DIR"
+    run env LC_ALL=C ls "$IMAGES_DIR"
     assert_output --regexp '^Pharo13-'
 }
 
@@ -179,7 +179,7 @@ pharo.version"
     run_pharo new 11 --no-open
     assert_failure 1
     assert_output --partial "it has no pharo.version file"
-    run ls "$IMAGES_DIR"
+    run env LC_ALL=C ls "$IMAGES_DIR"
     assert_output --regexp '^11-'
 }
 

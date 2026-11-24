@@ -38,12 +38,12 @@ cmd_info() {
         value=$(image_meta_get "$dir" origin) || value="unknown"
         printf 'Template\t%s\n' "$value"
         if value=$(image_meta_get "$dir" created); then
-            printf 'Created\t%s\n' "$(os_format_date "$value")"
+            printf 'Created\t%s\n' "$(format_date "$value")"
         else
             printf 'Created\tunknown\n'
         fi
         if value=$(image_meta_get "$dir" lastOpened); then
-            printf 'Last opened\t%s\n' "$(os_format_date "$value")"
+            printf 'Last opened\t%s\n' "$(format_date "$value")"
         else
             printf 'Last opened\tnever\n'
         fi

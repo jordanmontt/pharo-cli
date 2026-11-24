@@ -112,7 +112,7 @@ gone"
     create_image Img
     fake_image_file "$IMAGES_DIR/Img/Other.image"
     run_lib "image_rename_files '$IMAGES_DIR/Img' Img New"
-    run ls "$IMAGES_DIR/Img"
+    run env LC_ALL=C ls "$IMAGES_DIR/Img"
     assert_output "New.changes
 New.image
 Other.image
