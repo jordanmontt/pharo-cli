@@ -1,47 +1,103 @@
 #!/usr/bin/env bats
+# Dispatch: global options, unknown commands, aliases and exit codes.
 
-setup() {
-    source "$BATS_TEST_DIRNAME/../src/api.sh"
-    source "$BATS_TEST_DIRNAME/../src/command_parser.sh"
+load helpers/common
 
-    export TEST_DIR=$(mktemp -d)
-    export PHARO_IMAGES_DIR="$TEST_DIR/images"
-    mkdir -p "$PHARO_IMAGES_DIR"
-    export PROGRAM_NAME="pharo-cli"
-    export COMMAND_NAME="pharo"
-    export VERSION_NUMBER="0.8"
-    export LOCAL_VM_DIR="$TEST_DIR/fake_vm"
-    mkdir -p "$LOCAL_VM_DIR"
+setup() { sandbox_setup; }
 
-    # Mock fzf and other dependencies
-    fzf() { echo "test-image"; }
-    export -f fzf
-    trash() { mv "$1" "$TEST_DIR/trash"; }
-    export -f trash
-    curl() { echo "Mock download"; }
-    export -f curl
+@test "no arguments shows the full help" {
+    run_pharo
+    assert_success
+    assert_output --partial "Usage: pharo <command> [arguments] [options]"
+    assert_output --partial "Commands:"
 }
 
-teardown() {
-  rm -rf "$TEST_DIR"
+@test "--help and -h show the full help" {
+    run_pharo --help
+    assert_success
+    assert_output --partial "Commands:"
+    run_pharo -h
+    assert_success
+    assert_output --partial "Commands:"
 }
 
-@test "parse_user_input: calls open_command" {
-    mkdir -p "$PHARO_IMAGES_DIR/test-image"
-    touch "$PHARO_IMAGES_DIR/test-image/test.image"
-    run parse_user_input open
-    [ "$status" -eq 0 ]
-    [[ "$output" =~ "Opening Pharo image" ]]
+@test "--version and -v print the version from the VERSION file" {
+    run_pharo --version
+    assert_success
+    assert_output "pharo-cli $(cat "$PROJECT_ROOT/VERSION")"
+    run_pharo -v
+    assert_output "pharo-cli $(cat "$PROJECT_ROOT/VERSION")"
 }
 
-@test "parse_user_input: handles unknown command" {
-    run parse_user_input invalid
-    [ "$status" -eq 1 ]
-    [ "$output" = "Unknow command invalid" ]
+@test "an unknown command is a usage error (exit 2)" {
+    run_pharo frobnicate
+    assert_failure 2
+    assert_output --partial "unknown command: frobnicate"
+    assert_output --partial "Run 'pharo help' for usage."
 }
 
-@test "parse_user_input: calls help command" {
-    run parse_user_input help
-    [ "$status" -eq 0 ]
-    [[ "$output" =~ "pharo-cli - A Pharo Images Manager" ]]
+@test "an unknown global option is a usage error (exit 2)" {
+    run_pharo --frobnicate
+    assert_failure 2
+    assert_output --partial "unknown option: --frobnicate"
+}
+
+@test "an unknown option of a command is a usage error that points to its help" {
+    run_pharo list --frobnicate
+    assert_failure 2
+    assert_output --partial "unknown option for 'list': --frobnicate"
+    assert_output --partial "Run 'pharo help list' for usage."
+}
+
+@test "too many arguments is a usage error" {
+    run_pharo path a b
+    assert_failure 2
+    assert_output --partial "too many arguments for 'path'"
+}
+
+@test "every alias runs its command" {
+    local pair alias command
+    for pair in o:open n:new l:list ls:list i:info p:path re:rename d:duplicate rm:remove r:run im:import t:templates c:config up:self-update h:help v:version; do
+        alias="${pair%%:*}"
+        command="${pair#*:}"
+        run_pharo "$alias" --help
+        assert_success
+        assert_line --index 0 --partial "Usage: pharo $command"
+    done
+}
+
+@test "works when called through a symlink, like the installed one" {
+    mkdir -p "$SANDBOX/bin"
+    ln -s "$PHARO_BIN" "$SANDBOX/bin/pharo"
+    run_in_sandbox "$SANDBOX/bin/pharo" version
+    assert_success
+    assert_output "pharo-cli $(cat "$PROJECT_ROOT/VERSION")"
+}
+
+@test "works through a relative symlink" {
+    mkdir -p "$SANDBOX/a/b"
+    ln -s "$PHARO_BIN" "$SANDBOX/a/pharo-target"
+    ln -s ../pharo-target "$SANDBOX/a/b/pharo"
+    run_in_sandbox "$SANDBOX/a/b/pharo" version
+    assert_success
+}
+
+@test "an unsupported operating system is reported" {
+    export FAKE_OS=MINGW64_NT
+    run_pharo list
+    assert_failure 1
+    assert_output --partial "unsupported operating system: MINGW64_NT"
+}
+
+@test "with SIGPIPE ignored, as on some CI machines, nothing reports a broken pipe" {
+    # Ignored signals stay ignored across exec, so pharo runs like on such a
+    # machine. Repeated because a broken pipe depends on timing.
+    local i
+    for i in 1 2 3 4 5; do
+        run_in_sandbox /bin/bash -c 'trap "" PIPE
+            "$1" __complete 2 pharo help r && "$1" __complete 2 pharo open --vm-arg && "$1" help rename >/dev/null && "$1" config get vmStatus' _ "$PHARO_BIN"
+        assert_success
+        refute_output --partial "Broken pipe"
+        refute_output --partial "write error"
+    done
 }

@@ -1,0 +1,243 @@
+OrderedCollection [
+	PhLTemplateSource {
+		#type : #Cache,
+		#name : 'Templates'
+	},
+	PhLTemplateSource {
+		#type : #URLGroup,
+		#name : 'Pharo Courses',
+		#templates : [
+			PhLTemplateSource {
+				#type : #URL,
+				#name : 'Pharo Mooc',
+				#url : 'https://mooc.pharo.org/image/PharoWeb.zip'
+			},
+			PhLTemplateSource {
+				#type : #URL,
+				#name : 'Pharo 10.0 - 64bit',
+				#url : 'https://files.pharo.org/image/100/latest-64.zip'
+			},
+			PhLTemplateSource {
+				#type : #URL,
+				#name : 'Smic (Compiler Course)',
+				#url : 'https://rmod-files.lille.inria.fr/Lectures/Compiler-Course/CompilerCourse-latest.zip'
+			}
+		]
+	},
+	PhLTemplateSource {
+		#type : #URLGroup,
+		#name : 'Official distributions',
+		#templates : [
+			PhLTemplateSource {
+				#type : #URL,
+				#name : 'Pharo 15.0 - 64bit (development version, latest)',
+				#url : 'https://files.pharo.org/image/150/latest-64.zip'
+			},
+			PhLTemplateSource {
+				#type : #URL,
+				#name : 'Pharo 14.0 - 64bit (stable)',
+				#url : 'https://files.pharo.org/image/140/latest-64.zip'
+			},
+			PhLTemplateSource {
+				#type : #URL,
+				#name : 'Pharo 13.1 - 64bit (old stable)',
+				#url : 'https://files.pharo.org/image/130/latest-64.zip'
+			},
+			PhLTemplateSource {
+				#type : #URL,
+				#name : 'Moose Suite 14 (development)',
+				#url : 'https://github.com/moosetechnology/Moose/releases/download/continuous/Moose14-development-Pharo64-14.zip'
+				},
+			PhLTemplateSource {
+				#type : #URL,
+				#name : 'Moose Suite 13 (stable)',
+				#url : 'https://github.com/moosetechnology/Moose/releases/download/v13.x.x/Moose13-stable-Pharo64-13.zip'
+				},
+			PhLTemplateSource {
+				#type : #URL,
+				#name : 'Moose Suite 13 (stable) - Pharo 14',
+				#url : 'https://github.com/moosetechnology/Moose/releases/download/v13.x.x/Moose13-stable-Pharo64-14.zip'
+				},
+			PhLTemplateSource {
+				#type : #URL,
+				#name : 'Moose Suite 12 (old-stable)',
+				#url : 'https://github.com/moosetechnology/Moose/releases/download/v12.0.0/Moose12-stable-Pharo64-12.zip'
+				}
+			
+		],
+		#expanded : true
+	},
+	PhLTemplateSource {
+		#type : #URLGroup,
+		#name : 'Spec-Toplo',
+		#templates : [
+			PhLTemplateSource {
+				#type : #URL,
+				#name : 'Spec-Toplo Pharo 14 (development)',
+				#url : 'https://github.com/pharo-graphics/Spec-Toplo/releases/download/continuous/Spec-Toplo-Pharo14.zip'
+			},
+			PhLTemplateSource {
+				#type : #URL,
+				#name : 'Spec-Toplo Pharo 15 (development)',
+				#url : 'https://github.com/pharo-graphics/Spec-Toplo/releases/download/continuous/Spec-Toplo-Pharo15.zip'
+			}
+		],
+		#expanded : true
+	},
+	PhLTemplateSource {
+		#type : #URLGroup,
+		#name : 'Pharo-Music distributions',
+		#templates : [
+			PhLTemplateSource {
+				#type : #URL,
+				#name : 'Pharo-Music (beta)',
+				#url : 'https://github.com/lucretiomsp/phausto/releases/download/v0.1/Pharo.Music.zip'
+			}
+		],
+		#expanded : true
+	},
+	PhLTemplateSource {
+		#type : #URLGroup,
+		#name : 'Pharo-LLM distributions',
+		#templates : [
+			PhLTemplateSource {
+				#type : #URL,
+				#name : 'Pharo-LLM 14 (development)',
+				#url : 'https://github.com/pharo-llm/pharo-llm/releases/download/pharo-llm-14-development/Pharo-LLM-P14.zip'
+			}
+		],
+		#expanded : true
+	},
+	PhLTemplateSource {
+		#type : #URLGroup,
+		#name : 'Deprecated distributions',
+		#templates : [
+			PhLTemplateSource {
+				#type : #URL,
+				#name : 'Pharo 12.0 - 64bit',
+				#url : 'https://files.pharo.org/image/120/latest-64.zip'
+			},
+			PhLTemplateSource {
+				#type : #URL,
+				#name : 'Pharo 11.0 - 64bit',
+				#url : 'https://files.pharo.org/image/110/latest-64.zip'
+			},
+			PhLTemplateSource {
+				#type : #URL,
+				#name : 'Pharo 10.0 - 64bit',
+				#url : 'https://files.pharo.org/image/100/latest-64.zip'
+			},
+			PhLTemplateSource {
+				#type : #URL,
+				#name : 'Pharo 10.0 - 32bit',
+				#url : 'https://files.pharo.org/image/100/latest-32.zip'
+			},
+			PhLTemplateSource {
+				#type : #URL,
+				#name : 'Pharo 9.0 - 64bit',
+				#url : 'https://files.pharo.org/image/90/stable-64.zip'
+			},
+			PhLTemplateSource {
+				#type : #URL,
+				#name : 'Pharo 9.0 - 32bit',
+				#url : 'https://files.pharo.org/image/90/stable-32.zip'
+			},
+			PhLTemplateSource {
+				#type : #URL,
+				#name : 'Pharo 8.0 - 64bit',
+				#url : 'https://files.pharo.org/image/80/stable-64.zip'
+			},
+			PhLTemplateSource {
+				#type : #URL,
+				#name : 'Pharo 8.0 - 32bit',
+				#url : 'https://files.pharo.org/image/80/stable-32.zip'
+			},
+			PhLTemplateSource {
+				#type : #URL,
+				#name : 'Pharo 7.0 - 32bit',
+				#url : 'https://files.pharo.org/image/70/stable-32.zip'
+			},
+			PhLTemplateSource {
+				#type : #URL,
+				#name : 'Pharo 7.0 - 64bit',
+				#url : 'https://files.pharo.org/image/70/stable-64.zip'
+			},
+			PhLTemplateSource {
+				#type : #URL,
+				#name : 'Pharo 6.1 - 32bit',
+				#url : 'https://files.pharo.org/image/60/latest.zip'
+			},
+			PhLTemplateSource {
+				#type : #URL,
+				#name : 'Pharo 6.1 - 64bit',
+				#url : 'https://files.pharo.org/image/60/latest-64.zip'
+			},
+			PhLTemplateSource {
+				#type : #URL,
+				#name : 'Pharo 5.0',
+				#url : 'https://files.pharo.org/image/50/latest.zip'
+			},
+			PhLTemplateSource {
+				#type : #URL,
+				#name : 'Pharo 4.0',
+				#url : 'https://files.pharo.org/image/40/latest.zip'
+			},
+			PhLTemplateSource {
+				#type : #URL,
+				#name : 'Pharo 3.0',
+				#url : 'https://files.pharo.org/image/30/latest.zip'
+			},
+			PhLTemplateSource {
+				#type : #URL,
+				#name : 'Pharo 2.0',
+				#url : 'https://files.pharo.org/image/20/latest.zip'
+			},
+			PhLTemplateSource {
+				#type : #URL,
+				#name : 'Moose Suite 8.0',
+				#url : 'https://github.com/moosetechnology/Moose/releases/download/v8.x.x/Moose8-old-stable-Pharo64-8.0.zip'
+  			},
+			PhLTemplateSource {
+				#type : #URL,
+				#name : 'Moose Suite 9.0',
+				#url : 'https://github.com/moosetechnology/Moose/releases/download/v9.x.x/Moose9-stable-Pharo64-10.zip'
+  			}, 
+			PhLTemplateSource {
+				#type : #URL,
+				#name : 'Moose Suite 10',
+				#url : 'https://github.com/moosetechnology/Moose/releases/download/v10.x.x/Moose10-stable-Pharo64-10.zip'
+  			},
+			PhLTemplateSource {
+				#type : #URL,
+				#name : 'Moose Suite 11 (old stable)',
+				#url : 'https://github.com/moosetechnology/Moose/releases/download/v11.x.x/Moose11-stable-Pharo64-11.zip'
+  			}
+		]
+	},
+	PhLTemplateSource {
+		#type : #HttpListing,
+		#name : 'Pharo 15.0 (development version)',
+		#url : 'https://files.pharo.org/image/150/',
+		#filterPattern : 'href="(Pharo-?15(.[0-9]+)?-SNAPSHOT.build.[^"]*.zip)"'
+	},
+	PhLTemplateSource {
+		#type : #HttpListing,
+		#name : 'Pharo 14.0 (stable)',
+		#url : 'https://files.pharo.org/image/140/',
+                #filterPattern : 'href="(Pharo-?14(.[0-9]+)?-SNAPSHOT.build.[^"]*.zip)"'
+	},
+	PhLTemplateSource {
+		#type : #HttpListing,
+		#name : 'Pharo IoT (PharoThings)',
+		#url : 'https://github.com/pharo-iot/PharoThings/releases',
+		#filterPattern : 'href="([^"]*/Pharo[0-9][^"]*.zip)"',
+  		#templateNameFormat: '{6} ({5})'
+	},
+	PhLTemplateSource {
+		#type : #HttpListing,
+		#name : 'Pharo Remote Development (TelePharo)',
+		#url : 'https://github.com/pharo-ide/TelePharo/releases',
+		#filterPattern : 'href="([^"]*/Pharo[0-9][^"]*.zip)"',
+  		#templateNameFormat: '{6} ({5})'
+  	}
+]

@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# Fake gio: supports "gio trash -- <path>" only.
+echo "gio $*" >>"$FAKE_LOG/trash.log"
+[ "$1" = trash ] && [ "$2" = -- ] || exit 1
+mkdir -p "$FAKE_TRASH" && mv "$3" "$FAKE_TRASH/"

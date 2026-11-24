@@ -1,11 +1,42 @@
-name: Run Bats Tests
-on: [push, pull_request]
+name: Tests
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron: "0 4 * * *" # nightly, for the live test against files.pharo.org
+  workflow_dispatch:
+
 jobs:
-  test:
-    runs-on: ubuntu-latest
+  check:
+    # Lint, the offline test suite, and the docs/tests consistency checks.
+    if: github.event_name != 'schedule'
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v3
-      - name: Install Bats
-        run: sudo apt-get install -y bats
-      - name: Run Tests
-        run: bats tests/*.bats
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Install ShellCheck and zsh (Linux)
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y shellcheck zsh
+      - name: Install ShellCheck (macOS)
+        if: runner.os == 'macOS'
+        run: brew install shellcheck
+      - name: Bash version used by the tests
+        run: /bin/bash --version | head -n 1
+      - run: make check
+
+  live:
+    # Real downloads and real VMs: nightly and on demand.
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - run: make test-live

@@ -1,0 +1,3 @@
+# help.sh prints Markdown and roff, where backticks and backslashes are meant
+# literally (SC2016, SC2028). templates.sh embeds single quotes in awk (SC1003).
+disable=SC2016,SC2028,SC1003

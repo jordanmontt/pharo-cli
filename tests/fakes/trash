@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# Fake trash: moves its argument into $FAKE_TRASH.
+echo "trash $*" >>"$FAKE_LOG/trash.log"
+mkdir -p "$FAKE_TRASH" && mv "$1" "$FAKE_TRASH/"

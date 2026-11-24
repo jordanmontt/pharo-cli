@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+# Fake curl: serves files from $FAKE_HTTP_ROOT/<host>/<path> instead of the
+# network, and records every URL in $FAKE_LOG/curl.log. A missing file is a
+# 404 (exit 22, like curl -f). file:// URLs are read from disk.
+output=""
+url=""
+while [ $# -gt 0 ]; do
+    case "$1" in
+        -o) output="$2"; shift ;;
+        -*) ;;
+        *) url="$1" ;;
+    esac
+    shift
+done
+echo "$url" >>"$FAKE_LOG/curl.log"
+case "$url" in
+    file://*) source="${url#file://}" ;;
+    http://* | https://*) path="${url#*://}"; source="$FAKE_HTTP_ROOT/$path" ;;
+    *) echo "fake curl: unsupported URL: $url" >&2; exit 3 ;;
+esac
+if [ ! -f "$source" ]; then
+    echo "curl: (22) The requested URL returned error: 404" >&2
+    exit 22
+fi
+if [ -n "$output" ]; then
+    cat "$source" >"$output"
+else
+    cat "$source"
+fi

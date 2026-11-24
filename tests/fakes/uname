@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# Fake uname: the OS and CPU come from $FAKE_OS and $FAKE_ARCH.
+case "${1:-}" in
+    -s | '') echo "$FAKE_OS" ;;
+    -m) echo "$FAKE_ARCH" ;;
+    *) echo "fake uname: unsupported option $1" >&2; exit 1 ;;
+esac

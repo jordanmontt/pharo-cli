@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+# @command open
+# @alias o
+# @summary Open an image with its VM.
+# @description The VM runs in this terminal unless --background is given or the openMode setting is background. An image without a VM gets one downloaded first.
+# @arg [image:image] The image to open. Without it, you choose one from a list.
+# @option -b --background Run the VM in the background; its output goes to <image>/pharo-cli.log.
+# @option -f --foreground Run the VM in this terminal (the default, see the openMode setting).
+# @option --vm-arg <arg:vm-arg> Pass one argument to the VM. Repeat it to pass several.
+# @example pharo open MyImage | Open the image MyImage.
+# @example pharo open | Choose an image from a list and open it.
+# @example pharo open MyImage --background | Open MyImage and get the terminal back.
+# @example pharo open MyImage --vm-arg --logLevel=4 | Open MyImage with a VM argument.
+
+cmd_open() {
+    local name="" mode count=0
+    local -a vm_args
+    vm_args=()
+    mode=$(config_get openMode)
+    while [ $# -gt 0 ]; do
+        case "$1" in
+            -b | --background) mode=background ;;
+            -f | --foreground) mode=foreground ;;
+            --vm-arg)
+                [ $# -ge 2 ] || usage_error "--vm-arg needs a value" open
+                vm_args[${#vm_args[@]}]="$2"
+                shift
+                ;;
+            --vm-arg=*) vm_args[${#vm_args[@]}]="${1#--vm-arg=}" ;;
+            *)
+                common_option open "$1" || {
+                    count=$((count + 1))
+                    name="$1"
+                }
+                ;;
+        esac
+        shift
+    done
+    check_argument_count open 1 "$count"
+    [ -n "$name" ] || name=$(pick_image "Open") || exit "$EXIT_ERROR"
+    image_require "$name"
+    launch_open "$name" "$mode" ${vm_args[@]+"${vm_args[@]}"}
+}
