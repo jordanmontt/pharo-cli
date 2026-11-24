@@ -1,0 +1,263 @@
+#!/usr/bin/env bash
+# Help, generated from the command headers (see registry.sh) and the settings
+# table (see config.sh). The same data is rendered three ways: as terminal
+# help, as the pharo(1) man page and as the README command reference.
+
+PHARO_CLI_DESCRIPTION="pharo-cli is a command-line manager for Pharo images. It creates images from the official templates, opens them with the right VM, and lets you list, rename, duplicate and remove them. Each image lives in its own folder with its own VM."
+
+# Prints "name, alias, alias" for the command $1.
+help_names() {
+    local names="$1" alias
+    while IFS= read -r alias; do
+        [ -n "$alias" ] && names="$names, $alias"
+    done <<EOF
+$(registry_values "$1" alias)
+EOF
+    printf '%s\n' "$names"
+}
+
+# The flags of an option line ("-b --background") as "-b, --background", with
+# its value appended ("--vm-arg <arg>").
+help_option_label() {
+    local flags="$1" value="$2" label
+    label=$(printf '%s' "$flags" | sed 's/ /, /g')
+    [ -n "$value" ] && label="$label <${value%%:*}>"
+    printf '%s\n' "$label"
+}
+
+# Prints "  label   text" with the text aligned at column $3.
+help_row() {
+    local label="$1" text="$2" width="$3"
+    if [ "${#label}" -ge $((width - 2)) ]; then
+        printf '  %s\n  %*s%s\n' "$label" $((width - 2)) '' "$text"
+    else
+        printf '  %-*s%s\n' $((width - 2)) "$label" "$text"
+    fi
+}
+
+help_version() {
+    printf '%s %s\n' "$PHARO_CLI_PROGRAM_NAME" "$(pharo_cli_version)"
+}
+
+# The full help: commands, settings and every example.
+help_overview() {
+    local command example
+    help_version
+    echo
+    printf '%s\n' "$PHARO_CLI_DESCRIPTION"
+    echo
+    printf 'Usage: %s <command> [arguments] [options]\n' "$PHARO_CLI_COMMAND_NAME"
+    echo
+    echo "Commands:"
+    for command in $(registry_commands); do
+        help_row "$(help_names "$command")" "$(registry_value "$command" summary)" 22
+    done
+    echo
+    echo "Global options:"
+    help_row "-h, --help" "Show this help. '$PHARO_CLI_COMMAND_NAME help <command>' shows one command." 22
+    help_row "-v, --version" "Show the version." 22
+    echo
+    printf "Settings (change them with '%s config set <key> <value>'):\n" "$PHARO_CLI_COMMAND_NAME"
+    help_settings
+    echo
+    echo "Examples:"
+    for command in $(registry_commands); do
+        while IFS= read -r example; do
+            [ -n "$example" ] && help_example "$example"
+        done <<EOF
+$(registry_values "$command" example)
+EOF
+    done
+    echo
+    printf "Run '%s help <command>' for a command's arguments and options, or 'man %s'.\n" "$PHARO_CLI_COMMAND_NAME" "$PHARO_CLI_COMMAND_NAME"
+    printf 'Source and issues: https://github.com/%s (MIT License)\n' "$PHARO_CLI_REPOSITORY"
+}
+
+# Prints one settings row per key, with its default.
+help_settings() {
+    local key default description
+    while IFS='|' read -r key default _ description; do
+        [ -n "$default" ] || default="(empty)"
+        help_row "$key" "$description Default: $default" 22
+    done <<EOF
+$(config_table)
+EOF
+}
+
+# Prints an "example | description" header value as two lines.
+help_example() {
+    printf '  %s\n      %s\n' "${1%% | *}" "${1#* | }"
+}
+
+# The help of the command $1.
+help_command() {
+    local command="$1" line name description flags value aliases
+    printf 'Usage: %s\n' "$(registry_usage "$command")"
+    echo
+    printf '%s\n' "$(registry_value "$command" summary)"
+    while IFS= read -r line; do
+        [ -n "$line" ] && { echo; printf '%s\n' "$line"; }
+    done <<EOF
+$(registry_values "$command" description)
+EOF
+    aliases=$(registry_values "$command" alias | tr '\n' ' ' | sed 's/ $//; s/ /, /g')
+    if [ -n "$aliases" ]; then
+        echo
+        printf 'Aliases: %s\n' "$aliases"
+    fi
+    if [ -n "$(registry_values "$command" arg)" ]; then
+        echo
+        echo "Arguments:"
+        while IFS="$PHARO_CLI_SEP" read -r name _ _ _ description; do
+            [ -n "$name" ] && help_row "<$name>" "$description" 24
+        done <<EOF
+$(registry_arguments "$command")
+EOF
+    fi
+    echo
+    echo "Options:"
+    while IFS="$PHARO_CLI_SEP" read -r flags value description; do
+        [ -n "$flags" ] && help_row "$(help_option_label "$flags" "$value")" "$description" 24
+    done <<EOF
+$(registry_options "$command")
+EOF
+    help_row "-h, --help" "Show this help." 24
+    if [ -n "$(registry_values "$command" example)" ]; then
+        echo
+        echo "Examples:"
+        while IFS= read -r line; do
+            [ -n "$line" ] && help_example "$line"
+        done <<EOF
+$(registry_values "$command" example)
+EOF
+    fi
+}
+
+# Escapes text for roff: backslashes, dashes, and dots or quotes at the start
+# of a line.
+help_roff() {
+    printf '%s\n' "$1" | sed -e 's/\\/\\e/g' -e 's/-/\\-/g' -e "s/^\\([.']\\)/\\\\\\&\\1/"
+}
+
+# The pharo(1) man page, in roff.
+help_man() {
+    local command line name description flags value key default
+    printf '.TH PHARO 1 "" "%s %s" "User Commands"\n' "$PHARO_CLI_PROGRAM_NAME" "$(pharo_cli_version)"
+    echo ".SH NAME"
+    echo 'pharo \- command\-line manager for Pharo images'
+    echo ".SH SYNOPSIS"
+    echo '.B pharo'
+    echo '\fIcommand\fR [\fIarguments\fR] [\fIoptions\fR]'
+    echo ".SH DESCRIPTION"
+    help_roff "$PHARO_CLI_DESCRIPTION"
+    echo ".SH COMMANDS"
+    for command in $(registry_commands); do
+        printf '.SS "%s"\n' "$(help_roff "$(help_names "$command")")"
+        printf '.B %s\n' "$(help_roff "$(registry_usage "$command")")"
+        echo ".PP"
+        help_roff "$(registry_value "$command" summary)"
+        while IFS= read -r line; do
+            [ -n "$line" ] && { echo ".PP"; help_roff "$line"; }
+        done <<EOF
+$(registry_values "$command" description)
+EOF
+        while IFS="$PHARO_CLI_SEP" read -r name _ _ _ description; do
+            [ -n "$name" ] || continue
+            echo ".TP"
+            printf '.I %s\n' "$(help_roff "<$name>")"
+            help_roff "$description"
+        done <<EOF
+$(registry_arguments "$command")
+EOF
+        while IFS="$PHARO_CLI_SEP" read -r flags value description; do
+            [ -n "$flags" ] || continue
+            echo ".TP"
+            printf '.B %s\n' "$(help_roff "$(help_option_label "$flags" "$value")")"
+            help_roff "$description"
+        done <<EOF
+$(registry_options "$command")
+EOF
+        while IFS= read -r line; do
+            [ -n "$line" ] || continue
+            echo ".TP"
+            printf '.B %s\n' "$(help_roff "${line%% | *}")"
+            help_roff "${line#* | }"
+        done <<EOF
+$(registry_values "$command" example)
+EOF
+    done
+    echo ".SH SETTINGS"
+    printf 'Settings are changed with \\fB%s config set\\fR \\fIkey value\\fR and stored in\n' "$PHARO_CLI_COMMAND_NAME"
+    echo '\fI$XDG_CONFIG_HOME/pharo\-cli/config\fR (\fI~/.config/pharo\-cli/config\fR by default).'
+    echo 'An environment variable \fBPHARO_CLI_\fR\fIKEY\fR overrides the file, for example'
+    echo '\fBPHARO_CLI_IMAGES_DIR\fR for \fBimagesDir\fR.'
+    while IFS='|' read -r key default _ description; do
+        [ -n "$default" ] || default="(empty)"
+        echo ".TP"
+        printf '.B %s\n' "$key"
+        help_roff "$description Default: $default"
+    done <<EOF
+$(config_table)
+EOF
+    echo ".SH FILES"
+    echo ".TP"
+    echo '.I ~/.config/pharo\-cli/config'
+    echo "User settings."
+    echo ".TP"
+    echo '.I ~/.cache/pharo\-cli/sources.list'
+    echo "Cached template list."
+    echo ".TP"
+    echo '.I <imagesDir>/<image>/'
+    echo "One folder per image, with its image files, its VM in pharo\\-vm/ and pharo\\-cli metadata in .pharo\\-cli."
+    echo ".SH EXIT STATUS"
+    echo "0 on success, 1 when a command fails or is cancelled, 2 for a wrong command line."
+    echo ".SH SEE ALSO"
+    printf 'https://github.com/%s\n' "$PHARO_CLI_REPOSITORY"
+}
+
+# The README command reference, in Markdown.
+help_markdown() {
+    local command line name description flags value key default aliases
+    for command in $(registry_commands); do
+        printf '### `%s`\n\n' "$command"
+        printf '```\n%s\n```\n\n' "$(registry_usage "$command")"
+        printf '%s\n' "$(registry_value "$command" summary)"
+        while IFS= read -r line; do
+            [ -n "$line" ] && printf '\n%s\n' "$line"
+        done <<EOF
+$(registry_values "$command" description)
+EOF
+        aliases=$(registry_values "$command" alias | sed 's/.*/`&`/' | tr '\n' ' ' | sed 's/ $//; s/ /, /g')
+        [ -n "$aliases" ] && printf '\nAliases: %s\n' "$aliases"
+        if [ -n "$(registry_values "$command" arg)$(registry_values "$command" option)" ]; then
+            printf '\n| Argument or option | Description |\n|---|---|\n'
+            while IFS="$PHARO_CLI_SEP" read -r name _ _ _ description; do
+                [ -n "$name" ] && printf '| `<%s>` | %s |\n' "$name" "$description"
+            done <<EOF
+$(registry_arguments "$command")
+EOF
+            while IFS="$PHARO_CLI_SEP" read -r flags value description; do
+                [ -n "$flags" ] && printf '| `%s` | %s |\n' "$(help_option_label "$flags" "$value")" "$description"
+            done <<EOF
+$(registry_options "$command")
+EOF
+        fi
+        if [ -n "$(registry_values "$command" example)" ]; then
+            printf '\nExamples:\n\n'
+            while IFS= read -r line; do
+                [ -n "$line" ] && printf -- '- `%s`: %s\n' "${line%% | *}" "${line#* | }"
+            done <<EOF
+$(registry_values "$command" example)
+EOF
+        fi
+        echo
+    done
+    printf '### Settings\n\n'
+    printf 'Change them with `%s config set <key> <value>`, or with an environment variable `PHARO_CLI_<KEY>` (for example `PHARO_CLI_IMAGES_DIR`).\n\n' "$PHARO_CLI_COMMAND_NAME"
+    printf '| Key | Default | Description |\n|---|---|---|\n'
+    while IFS='|' read -r key default _ description; do
+        printf '| `%s` | `%s` | %s |\n' "$key" "$default" "$description"
+    done <<EOF
+$(config_table)
+EOF
+}

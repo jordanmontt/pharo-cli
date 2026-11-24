@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# Fake fzf: records its input in $FAKE_LOG/fzf.input and prints
+# $FAKE_FZF_CHOICE, or exits 130 (cancelled) when it is empty.
+cat >"$FAKE_LOG/fzf.input"
+echo "$*" >>"$FAKE_LOG/fzf.log"
+[ -n "${FAKE_FZF_CHOICE:-}" ] || exit 130
+printf '%s\n' "$FAKE_FZF_CHOICE"

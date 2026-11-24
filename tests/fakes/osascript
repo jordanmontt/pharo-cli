@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# Fake osascript: records the script.
+printf '%s\n' "$*" >>"$FAKE_LOG/osascript.log"

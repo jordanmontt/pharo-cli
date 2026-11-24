@@ -1,13 +1,26 @@
-#!/bin/bash
+#!/usr/bin/env bash
+# pharo-cli entry point. Resolves the project root (following symlinks, since
+# the installer links this file into ~/.local/bin) and hands over to main.
 
-# pharo image manager
-#
+set -u
+set -o pipefail
 
-source "${BASH_SOURCE%/*}"/../src/command_parser.sh
+pharo_cli_resolve_root() {
+    local source="${BASH_SOURCE[0]}" dir
+    while [ -L "$source" ]; do
+        dir=$(cd -P "$(dirname "$source")" && pwd)
+        source=$(readlink "$source")
+        case "$source" in
+            /*) ;;
+            *) source="$dir/$source" ;;
+        esac
+    done
+    dir=$(cd -P "$(dirname "$source")" && pwd)
+    dirname "$dir"
+}
 
-#################################
-## Main Section
-#################################
+PHARO_CLI_ROOT=$(pharo_cli_resolve_root)
+# shellcheck source=src/main.sh
+. "$PHARO_CLI_ROOT/src/main.sh"
 
-
-parse_user_input ${@}
+pharo_main "$@"

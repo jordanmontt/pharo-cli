@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# Fake trash-put (trash-cli): supports "trash-put -- <path>".
+echo "trash-put $*" >>"$FAKE_LOG/trash.log"
+[ "$1" = -- ] || exit 1
+mkdir -p "$FAKE_TRASH" && mv "$2" "$FAKE_TRASH/"

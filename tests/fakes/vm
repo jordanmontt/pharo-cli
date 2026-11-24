@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# Fake Pharo VM, packed into the VM zips the fake server serves. Records its
+# working folder and arguments in $FAKE_LOG/vm.log (one argument per line,
+# after a "--- <folder>" line), prints a marker and exits $FAKE_VM_EXIT.
+{
+    echo "--- $PWD"
+    for argument in "$@"; do echo "$argument"; done
+} >>"$FAKE_LOG/vm.log"
+echo "fake vm ran"
+exit "${FAKE_VM_EXIT:-0}"
