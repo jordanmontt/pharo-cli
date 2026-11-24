@@ -32,7 +32,7 @@ cmd_self_update() {
 self_update_git() {
     local root="$PHARO_CLI_ROOT" tag
     has_command git || die "pharo-cli is a git clone, but git is not installed"
-    [ -z "$(git -C "$root" status --porcelain)" ] ||
+    [ -z "$(git -C "$root" status --porcelain --untracked-files=no)" ] ||
         die "$root has local changes; commit or discard them first"
     git -C "$root" fetch --quiet --tags origin || die "could not fetch updates"
     if [ "$1" = main ]; then
