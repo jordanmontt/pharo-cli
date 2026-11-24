@@ -109,7 +109,7 @@ EOF
         echo
         echo "Arguments:"
         while IFS="$PHARO_CLI_SEP" read -r name _ _ _ description; do
-            [ -n "$name" ] && help_row "<$name>" "$description" 24
+            [ -n "$name" ] && help_row "<$name>" "$description" 30
         done <<EOF
 $(registry_arguments "$command")
 EOF
@@ -117,11 +117,11 @@ EOF
     echo
     echo "Options:"
     while IFS="$PHARO_CLI_SEP" read -r flags value description; do
-        [ -n "$flags" ] && help_row "$(help_option_label "$flags" "$value")" "$description" 24
+        [ -n "$flags" ] && help_row "$(help_option_label "$flags" "$value")" "$description" 30
     done <<EOF
 $(registry_options "$command")
 EOF
-    help_row "-h, --help" "Show this help." 24
+    help_row "-h, --help" "Show this help." 30
     if [ -n "$(registry_values "$command" example)" ]; then
         echo
         echo "Examples:"
@@ -215,15 +215,20 @@ EOF
     printf 'https://github.com/%s\n' "$PHARO_CLI_REPOSITORY"
 }
 
+# Escapes text for Markdown, where <word> would be read as an HTML tag.
+help_md() {
+    printf '%s\n' "$1" | sed -e 's/</\&lt;/g' -e 's/>/\&gt;/g'
+}
+
 # The README command reference, in Markdown.
 help_markdown() {
     local command line name description flags value key default aliases
     for command in $(registry_commands); do
         printf '### `%s`\n\n' "$command"
         printf '```\n%s\n```\n\n' "$(registry_usage "$command")"
-        printf '%s\n' "$(registry_value "$command" summary)"
+        help_md "$(registry_value "$command" summary)"
         while IFS= read -r line; do
-            [ -n "$line" ] && printf '\n%s\n' "$line"
+            [ -n "$line" ] && printf '\n%s\n' "$(help_md "$line")"
         done <<EOF
 $(registry_values "$command" description)
 EOF
@@ -232,12 +237,12 @@ EOF
         if [ -n "$(registry_values "$command" arg)$(registry_values "$command" option)" ]; then
             printf '\n| Argument or option | Description |\n|---|---|\n'
             while IFS="$PHARO_CLI_SEP" read -r name _ _ _ description; do
-                [ -n "$name" ] && printf '| `<%s>` | %s |\n' "$name" "$description"
+                [ -n "$name" ] && printf '| `<%s>` | %s |\n' "$name" "$(help_md "$description")"
             done <<EOF
 $(registry_arguments "$command")
 EOF
             while IFS="$PHARO_CLI_SEP" read -r flags value description; do
-                [ -n "$flags" ] && printf '| `%s` | %s |\n' "$(help_option_label "$flags" "$value")" "$description"
+                [ -n "$flags" ] && printf '| `%s` | %s |\n' "$(help_option_label "$flags" "$value")" "$(help_md "$description")"
             done <<EOF
 $(registry_options "$command")
 EOF
@@ -245,7 +250,7 @@ EOF
         if [ -n "$(registry_values "$command" example)" ]; then
             printf '\nExamples:\n\n'
             while IFS= read -r line; do
-                [ -n "$line" ] && printf -- '- `%s`: %s\n' "${line%% | *}" "${line#* | }"
+                [ -n "$line" ] && printf -- '- `%s`: %s\n' "${line%% | *}" "$(help_md "${line#* | }")"
             done <<EOF
 $(registry_values "$command" example)
 EOF
@@ -256,7 +261,12 @@ EOF
     printf 'Change them with `%s config set <key> <value>`, or with an environment variable `PHARO_CLI_<KEY>` (for example `PHARO_CLI_IMAGES_DIR`).\n\n' "$PHARO_CLI_COMMAND_NAME"
     printf '| Key | Default | Description |\n|---|---|---|\n'
     while IFS='|' read -r key default _ description; do
-        printf '| `%s` | `%s` | %s |\n' "$key" "$default" "$description"
+        if [ -n "$default" ]; then
+            default="\`$default\`"
+        else
+            default="(empty)"
+        fi
+        printf '| `%s` | %s | %s |\n' "$key" "$default" "$(help_md "$description")"
     done <<EOF
 $(config_table)
 EOF

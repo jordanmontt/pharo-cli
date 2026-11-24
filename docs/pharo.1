@@ -1,0 +1,351 @@
+.TH PHARO 1 "" "pharo-cli 1.0.0" "User Commands"
+.SH NAME
+pharo \- command\-line manager for Pharo images
+.SH SYNOPSIS
+.B pharo
+\fIcommand\fR [\fIarguments\fR] [\fIoptions\fR]
+.SH DESCRIPTION
+pharo\-cli is a command\-line manager for Pharo images. It creates images from the official templates, opens them with the right VM, and lets you list, rename, duplicate and remove them. Each image lives in its own folder with its own VM.
+.SH COMMANDS
+.SS "config, c"
+.B pharo config [<action>] [<key>] [<value>] [options]
+.PP
+Show and change settings.
+.PP
+Actions: list (the default) shows every setting and where its value comes from; get prints one value; set stores a value in the config file; unset removes it so the default applies again; reset removes every stored value, after you confirm.
+.TP
+.I <action>
+list, get, set, unset or reset.
+.TP
+.I <key>
+The setting, for get, set and unset.
+.TP
+.I <value>
+The new value, for set.
+.TP
+.B \-y, \-\-yes
+Do not ask before reset.
+.TP
+.B pharo config
+Show every setting.
+.TP
+.B pharo config set imagesDir ~/Pharo/images
+Keep images in ~/Pharo/images.
+.TP
+.B pharo config get imagesDir
+Print the images folder setting.
+.TP
+.B pharo config set vmArgs \-\-logLevel=4
+Pass \-\-logLevel=4 to the VM every time.
+.TP
+.B pharo config unset imagesDir
+Go back to the default images folder.
+.TP
+.B pharo config reset
+Go back to the defaults for every setting.
+.SS "duplicate, d"
+.B pharo duplicate [<image>] [<new\-name>]
+.PP
+Copy an image, with its VM, under a new name.
+.TP
+.I <image>
+The image to copy. Without it, you choose one from a list.
+.TP
+.I <new\-name>
+The name of the copy. Without it, the copy is called <image>\-1 (or \-2, \-3... when taken).
+.TP
+.B pharo duplicate MyImage Backup
+Copy MyImage as Backup.
+.TP
+.B pharo duplicate MyImage
+Copy MyImage as MyImage\-1.
+.SS "help, h"
+.B pharo help [<command>]
+.PP
+Show the help, for every command or for one.
+.TP
+.I <command>
+The command to explain.
+.TP
+.B pharo help
+Show every command, setting and example.
+.TP
+.B pharo help new
+Show the arguments and options of new.
+.SS "import, im"
+.B pharo import <source> [<name>]
+.PP
+Add an existing image from a folder, a zip file or a zip URL.
+.PP
+A folder is copied, not moved. The image keeps its file names. When the image has no VM and has a pharo.version file, its VM is downloaded.
+.TP
+.I <source>
+A folder or .zip file containing a .image file, or the http(s) URL of such a zip.
+.TP
+.I <name>
+The name of the image. Without it, the folder or zip name is used.
+.TP
+.B pharo import ~/Downloads/MyProject
+Copy the image in ~/Downloads/MyProject into the images folder.
+.TP
+.B pharo import ~/Downloads/moose.zip Moose
+Add the image in moose.zip as Moose.
+.TP
+.B pharo import https://example.org/image.zip
+Download and add the image in a zip.
+.SS "info, i"
+.B pharo info [<image>]
+.PP
+Show details about an image.
+.TP
+.I <image>
+The image. Without it, you choose one from a list.
+.TP
+.B pharo info MyImage
+Show the Pharo version, image format, VM, size and dates of MyImage.
+.SS "list, l, ls"
+.B pharo list [options]
+.PP
+List the images, most recently opened or created first.
+.TP
+.B \-q, \-\-quiet
+Print only the image names, one per line.
+.TP
+.B pharo list
+List the images with their Pharo version and when they were last opened.
+.TP
+.B pharo list \-\-quiet
+Print only the image names.
+.SS "new, n"
+.B pharo new [<template>] [<name>] [options]
+.PP
+Create an image from a template.
+.PP
+The template is stable (the current Pharo release), latest (the newest Pharo version), a Pharo version such as 14 (its newest build), or a template id from 'pharo templates'. Without a template, the defaultTemplate setting is used.
+.PP
+With one argument, it is read as a template when it is a version, stable, latest or a template id, and as an image name otherwise. Use \-\-template or \-\-name when a name looks like a template.
+.PP
+Without a name, the image is called Pharo<version>\-<date and time>. The VM for the image is downloaded with it.
+.TP
+.I <template>
+The template to create the image from.
+.TP
+.I <name>
+The name of the new image.
+.TP
+.B \-t, \-\-template <template>
+The template to create the image from.
+.TP
+.B \-n, \-\-name <name>
+The name of the new image.
+.TP
+.B \-\-open
+Open the image once it is created (the default, see the autoOpenOnNew setting).
+.TP
+.B \-\-no\-open
+Do not open the image once it is created.
+.TP
+.B pharo new
+Create an image from the default template (the stable Pharo release).
+.TP
+.B pharo new 14
+Create an image from the newest Pharo 14 build.
+.TP
+.B pharo new 14 MyImage
+Create a Pharo 14 image named MyImage.
+.TP
+.B pharo new MyImage
+Create an image named MyImage from the default template.
+.TP
+.B pharo new latest MyImage \-\-no\-open
+Create MyImage from the newest Pharo version without opening it.
+.TP
+.B pharo new \-\-name 14 \-\-template stable
+Create an image named 14 from the stable template.
+.SS "open, o"
+.B pharo open [<image>] [options]
+.PP
+Open an image with its VM.
+.PP
+The VM runs in this terminal unless \-\-background is given or the openMode setting is background. An image without a VM gets one downloaded first.
+.TP
+.I <image>
+The image to open. Without it, you choose one from a list.
+.TP
+.B \-b, \-\-background
+Run the VM in the background; its output goes to <image>/pharo\-cli.log.
+.TP
+.B \-f, \-\-foreground
+Run the VM in this terminal (the default, see the openMode setting).
+.TP
+.B \-\-vm\-arg <arg>
+Pass one argument to the VM. Repeat it to pass several.
+.TP
+.B pharo open MyImage
+Open the image MyImage.
+.TP
+.B pharo open
+Choose an image from a list and open it.
+.TP
+.B pharo open MyImage \-\-background
+Open MyImage and get the terminal back.
+.TP
+.B pharo open MyImage \-\-vm\-arg \-\-logLevel=4
+Open MyImage with a VM argument.
+.SS "path, p"
+.B pharo path [<image>]
+.PP
+Print the folder of an image, or the images folder.
+.TP
+.I <image>
+The image. Without it, the folder that holds all images is printed.
+.TP
+.B cd "$(pharo path MyImage)"
+Go to the folder of MyImage.
+.TP
+.B pharo path
+Print the images folder.
+.SS "remove, rm"
+.B pharo remove [<image>] [options]
+.PP
+Move an image to the trash.
+.PP
+When the system has no trash (Linux without gio or trash\-cli), the image is deleted for good, after you confirm.
+.TP
+.I <image>
+The image to remove. Without it, you choose one from a list.
+.TP
+.B \-y, \-\-yes
+Do not ask before deleting for good.
+.TP
+.B pharo remove MyImage
+Move MyImage to the trash.
+.TP
+.B pharo rm
+Choose an image from a list and move it to the trash.
+.SS "rename, re"
+.B pharo rename [<image>] [<new\-name>]
+.PP
+Rename an image.
+.PP
+The image folder is renamed, and so are its .image and .changes files when they carry the old name.
+.TP
+.I <image>
+The image to rename. Without it, you choose one from a list.
+.TP
+.I <new\-name>
+The new name. Without it, you are asked for one.
+.TP
+.B pharo rename MyImage Experiments
+Rename MyImage to Experiments.
+.TP
+.B pharo rename
+Choose an image from a list and type its new name.
+.SS "run, r"
+.B pharo run <image> [<script>] [options]
+.PP
+Run a Smalltalk script or expression in an image, without its UI.
+.PP
+The VM runs headless in this terminal and its exit status is passed on. The image is not saved.
+.TP
+.I <image>
+The image to run.
+.TP
+.I <script>
+A .st file to run. It is given to the image's st command\-line handler.
+.TP
+.B \-e, \-\-eval <expression>
+Evaluate an expression and print its result, instead of running a script.
+.TP
+.B \-\-vm\-arg <arg>
+Pass one argument to the VM. Repeat it to pass several.
+.TP
+.B pharo run MyImage \-\-eval '3 + 4'
+Print 7.
+.TP
+.B pharo run MyImage build.st
+Run the script build.st in MyImage.
+.SS "self\-update, up"
+.B pharo self\-update [options]
+.PP
+Update pharo\-cli to its newest release.
+.TP
+.B \-\-main
+Update to the newest development version (the main branch) instead.
+.TP
+.B pharo self\-update
+Update to the newest release.
+.SS "templates, t"
+.B pharo templates [<filter>] [options]
+.PP
+List the templates that 'pharo new' can create images from.
+.PP
+Besides these ids, 'pharo new' accepts stable, latest, and a Pharo version such as 14. The list comes from Pharo Launcher's template list and is cached (see the templatesUrl and templatesCacheTtl settings).
+.TP
+.I <filter>
+Show only the templates whose id or name contains this text (case does not matter).
+.TP
+.B \-\-refresh
+Download the template list again instead of using the cached copy.
+.TP
+.B pharo templates
+List all templates.
+.TP
+.B pharo templates moose
+List the templates whose id or name contains moose.
+.SS "version, v"
+.B pharo version
+.PP
+Show the version of pharo\-cli.
+.TP
+.B pharo version
+Print the version.
+.SH SETTINGS
+Settings are changed with \fBpharo config set\fR \fIkey value\fR and stored in
+\fI$XDG_CONFIG_HOME/pharo\-cli/config\fR (\fI~/.config/pharo\-cli/config\fR by default).
+An environment variable \fBPHARO_CLI_\fR\fIKEY\fR overrides the file, for example
+\fBPHARO_CLI_IMAGES_DIR\fR for \fBimagesDir\fR.
+.TP
+.B imagesDir
+Folder that holds one sub\-folder per image. Default: ~/Documents/PharoCliImages
+.TP
+.B defaultTemplate
+Template used by 'pharo new' when none is given: stable, latest, a Pharo version such as 14, or a template id. Default: stable
+.TP
+.B vmStatus
+Which VM build to download: the released one (stable) or the newest nightly build (latest). Default: stable
+.TP
+.B openMode
+Whether 'pharo open' runs the VM in this terminal or in the background. Default: foreground
+.TP
+.B autoOpenOnNew
+Whether 'pharo new' opens the image once it is created. Default: true
+.TP
+.B vmArgs
+Arguments always passed to the VM, separated by spaces. Default: (empty)
+.TP
+.B picker
+How to choose an image when none is named: fzf, a numbered menu (select), or fzf when installed (auto). Default: auto
+.TP
+.B templatesUrl
+Template list in Pharo Launcher's sources.list format. Default: https://files.pharo.org/pharo\-launcher/sources.list
+.TP
+.B templatesCacheTtl
+Seconds before the template list is downloaded again. Default: 86400
+.TP
+.B filesServer
+Server for Pharo images and VMs (change it to use a mirror). Default: https://files.pharo.org
+.SH FILES
+.TP
+.I ~/.config/pharo\-cli/config
+User settings.
+.TP
+.I ~/.cache/pharo\-cli/sources.list
+Cached template list.
+.TP
+.I <imagesDir>/<image>/
+One folder per image, with its image files, its VM in pharo\-vm/ and pharo\-cli metadata in .pharo\-cli.
+.SH EXIT STATUS
+0 on success, 1 when a command fails or is cancelled, 2 for a wrong command line.
+.SH SEE ALSO
+https://github.com/jordanmontt/pharo-cli
