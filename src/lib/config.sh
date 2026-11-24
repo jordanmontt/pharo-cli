@@ -20,7 +20,7 @@ vmArgs||text|Arguments always passed to the VM, separated by spaces.
 picker|auto|enum:auto,fzf,select|How to choose an image when none is named: fzf, a numbered menu (select), or fzf when installed (auto).
 templatesUrl|https://files.pharo.org/pharo-launcher/sources.list|url|Template list in Pharo Launcher's sources.list format.
 templatesCacheTtl|86400|int|Seconds before the template list is downloaded again.
-filesServer|https://files.pharo.org|url|Server for Pharo images and VMs (change it to use a mirror).
+filesServer|https://files.pharo.org|url|Server for Pharo images and VMs (set it to use a mirror).
 EOF
 }
 

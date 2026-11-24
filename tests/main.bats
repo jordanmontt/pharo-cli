@@ -101,3 +101,13 @@ setup() { sandbox_setup; }
         refute_output --partial "write error"
     done
 }
+
+@test "physical_path resolves symlinked folders and relative paths" {
+    mkdir -p "$SANDBOX/real/dir" && touch "$SANDBOX/real/dir/file"
+    ln -s "$SANDBOX/real" "$SANDBOX/link"
+    real=$(cd "$SANDBOX/real" && pwd -P)
+    run_lib 'physical_path "'"$SANDBOX"'/link/dir/file"; physical_path ../dir/file "'"$SANDBOX"'/link/dir"; physical_path /missing/folder/file || echo missing'
+    assert_output "$real/dir/file
+$real/dir/file
+missing"
+}

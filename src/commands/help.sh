@@ -3,8 +3,6 @@
 # @alias h
 # @summary Show the help, for every command or for one.
 # @arg [command:command] The command to explain.
-# @example pharo help | Show every command, setting and example.
-# @example pharo help new | Show the arguments and options of new.
 
 cmd_help() {
     local count=0 name="" command

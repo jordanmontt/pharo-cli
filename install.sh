@@ -15,6 +15,9 @@
 #   PHARO_CLI_REF          a tag or branch to install (default: newest release)
 #   PHARO_CLI_RC_FILE      the startup file to edit (default: from $SHELL)
 #
+# It records what it created in $PHARO_CLI_INSTALL_DIR/.installed, which
+# 'pharo self-uninstall' reads to remove exactly that.
+#
 # This file cannot share code with pharo-cli: it runs before pharo-cli is on
 # disk.
 
@@ -56,7 +59,7 @@ newest_tag() {
 install_with_git() {
     if [ -d "$INSTALL_DIR/.git" ]; then
         say "Updating pharo-cli in $INSTALL_DIR"
-        [ -z "$(git -C "$INSTALL_DIR" status --porcelain)" ] ||
+        [ -z "$(git -C "$INSTALL_DIR" status --porcelain --untracked-files=no)" ] ||
             fail "$INSTALL_DIR has local changes; commit or discard them first"
         git -C "$INSTALL_DIR" fetch --quiet --tags origin || fail "could not fetch $PHARO_CLI_GIT_URL"
     else
@@ -156,6 +159,15 @@ update_rc_file() {
     cat "$tmp" >"$file" && rm -f "$tmp"
 }
 
+# Records the links and the startup file, for 'pharo self-uninstall'.
+write_manifest() {
+    {
+        say "binLink=$BIN_DIR/pharo"
+        say "manLink=$MAN_DIR/pharo.1"
+        say "rcFile=$1"
+    } >"$INSTALL_DIR/.installed" || fail "cannot write $INSTALL_DIR/.installed"
+}
+
 main() {
     local file
     check_requirements
@@ -175,6 +187,7 @@ main() {
     else
         say "Add $BIN_DIR to your PATH, and source $INSTALL_DIR/completions/pharo.bash for Tab completion."
     fi
+    write_manifest "$file"
     say ""
     say "Installed $("$INSTALL_DIR/bin/pharo" --version)."
     [ -n "$file" ] && say "Open a new terminal (or run: source $file), then run 'pharo help'."

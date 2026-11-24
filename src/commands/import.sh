@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 # @command import
 # @alias im
-# @summary Add an existing image from a folder, a zip file or a zip URL.
+# @summary Add an existing image from a folder, a zip file or a URL.
 # @description A folder is copied, not moved. The image keeps its file names. When the image has no VM and has a pharo.version file, its VM is downloaded.
 # @arg <source:file> A folder or .zip file containing a .image file, or the http(s) URL of such a zip.
 # @arg [name:none] The name of the image. Without it, the folder or zip name is used.
-# @example pharo import ~/Downloads/MyProject | Copy the image in ~/Downloads/MyProject into the images folder.
-# @example pharo import ~/Downloads/moose.zip Moose | Add the image in moose.zip as Moose.
-# @example pharo import https://example.org/image.zip | Download and add the image in a zip.
+# @example pharo import ~/Documents/Pharo/images/Moose | Copy an image from Pharo Launcher's images folder.
+# @example pharo import ~/Downloads/moose.zip Moose | Add the image in moose.zip, named Moose.
+# @example pharo import https://example.org/image.zip | Download a zip and add its image.
 
 cmd_import() {
     local source="" name="" count=0 folder target

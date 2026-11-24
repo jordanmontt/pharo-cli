@@ -8,12 +8,8 @@
 # @arg [value:config-value] The new value, for set.
 # @option -y --yes Do not ask before reset.
 # @complete complete_config
-# @example pharo config | Show every setting.
-# @example pharo config set imagesDir ~/Pharo/images | Keep images in ~/Pharo/images.
-# @example pharo config get imagesDir | Print the images folder setting.
+# @example pharo config set imagesDir ~/Pharo/images | Keep new images in ~/Pharo/images.
 # @example pharo config set vmArgs --logLevel=4 | Pass --logLevel=4 to the VM every time.
-# @example pharo config unset imagesDir | Go back to the default images folder.
-# @example pharo config reset | Go back to the defaults for every setting.
 
 cmd_config() {
     local yes=false count=0 action="" key="" value="" reason

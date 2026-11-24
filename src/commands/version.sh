@@ -2,7 +2,6 @@
 # @command version
 # @alias v
 # @summary Show the version of pharo-cli.
-# @example pharo version | Print the version.
 
 cmd_version() {
     while [ $# -gt 0 ]; do

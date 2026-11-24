@@ -4,7 +4,6 @@
 # @summary Print the folder of an image, or the images folder.
 # @arg [image:image] The image. Without it, the folder that holds all images is printed.
 # @example cd "$(pharo path MyImage)" | Go to the folder of MyImage.
-# @example pharo path | Print the images folder.
 
 cmd_path() {
     local name="" count=0

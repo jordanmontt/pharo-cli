@@ -11,12 +11,10 @@
 # @option -n --name <name:none> The name of the new image.
 # @option --open Open the image once it is created (the default, see the autoOpenOnNew setting).
 # @option --no-open Do not open the image once it is created.
-# @example pharo new | Create an image from the default template (the stable Pharo release).
-# @example pharo new 14 | Create an image from the newest Pharo 14 build.
-# @example pharo new 14 MyImage | Create a Pharo 14 image named MyImage.
-# @example pharo new MyImage | Create an image named MyImage from the default template.
-# @example pharo new latest MyImage --no-open | Create MyImage from the newest Pharo version without opening it.
-# @example pharo new --name 14 --template stable | Create an image named 14 from the stable template.
+# @example pharo new | Create an image from the stable Pharo release, with a generated name.
+# @example pharo new 14 MyImage | Create MyImage from the newest Pharo 14 build.
+# @example pharo new latest --no-open | Create an image from the newest Pharo version, without opening it.
+# @example pharo new --name 14 --template stable | Name an image 14: with the flags, 14 is not read as a version.
 
 cmd_new() {
     local template="" name="" auto_open count=0 first="" second="" resolved label url folder version

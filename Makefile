@@ -13,7 +13,7 @@ test:
 lint:
 	shellcheck -x -s bash $(SHELL_FILES)
 
-# Regenerates docs/pharo.1 and the README command reference.
+# Regenerates docs/pharo.1, docs/commands.md and the README settings table.
 docs:
 	scripts/gen-docs.sh
 

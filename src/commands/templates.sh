@@ -1,11 +1,10 @@
 #!/usr/bin/env bash
 # @command templates
 # @alias t
-# @summary List the templates that 'pharo new' can create images from.
+# @summary List the templates that 'pharo new' can use.
 # @description Besides these ids, 'pharo new' accepts stable, latest, and a Pharo version such as 14. The list comes from Pharo Launcher's template list and is cached (see the templatesUrl and templatesCacheTtl settings).
 # @arg [filter:none] Show only the templates whose id or name contains this text (case does not matter).
 # @option --refresh Download the template list again instead of using the cached copy.
-# @example pharo templates | List all templates.
 # @example pharo templates moose | List the templates whose id or name contains moose.
 
 cmd_templates() {

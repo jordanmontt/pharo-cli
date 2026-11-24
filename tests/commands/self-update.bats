@@ -70,6 +70,18 @@ publish() {
     assert_output --partial "has local changes"
 }
 
+@test "untracked files, such as the installer's .installed, do not stop the update" {
+    make_release_repo "$SANDBOX/origin" 1.0.0
+    git -C "$SANDBOX/origin" tag v1.0.0
+    git clone -q "$SANDBOX/origin" "$SANDBOX/install"
+    git -C "$SANDBOX/install" checkout -q v1.0.0
+    echo "binLink=x" >"$SANDBOX/install/.installed"
+    publish 1.1.0 tag
+    run_in_sandbox "$SANDBOX/install/bin/pharo" self-update
+    assert_success
+    assert_output "Updated pharo-cli from 1.0.0 to 1.1.0."
+}
+
 @test "an archive install downloads the newest GitHub release" {
     mkdir -p "$SANDBOX/install"
     cp -R "$PROJECT_ROOT/bin" "$PROJECT_ROOT/src" "$SANDBOX/install/"

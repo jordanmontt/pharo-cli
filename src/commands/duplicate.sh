@@ -4,7 +4,6 @@
 # @summary Copy an image, with its VM, under a new name.
 # @arg [image:image] The image to copy. Without it, you choose one from a list.
 # @arg [new-name:none] The name of the copy. Without it, the copy is called <image>-1 (or -2, -3... when taken).
-# @example pharo duplicate MyImage Backup | Copy MyImage as Backup.
 # @example pharo duplicate MyImage | Copy MyImage as MyImage-1.
 
 cmd_duplicate() {

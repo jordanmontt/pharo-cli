@@ -13,18 +13,50 @@ setup() { sandbox_setup; }
     assert_line --regexp '^  self-update, up +Update pharo-cli to its newest release\.$'
 }
 
-@test "help shows every setting with its default" {
+@test "help shows every setting with its default on its own line, separated by blank lines" {
     run_pharo help
-    assert_line --regexp '^  imagesDir +Folder that holds one sub-folder per image\. Default: ~/Documents/PharoCliImages$'
-    assert_line --regexp '^  vmArgs +.*Default: \(empty\)$'
+    assert_output --partial "  imagesDir           Folder that holds one sub-folder per image.
+                      Default: ~/Documents/PharoCliImages
+
+  defaultTemplate     Template used by 'pharo new' when none is given: stable,
+                      latest, a Pharo version such as 14, or a template id.
+                      Default: stable
+"
+    assert_output --partial "  vmArgs              Arguments always passed to the VM, separated by spaces.
+                      Default: (empty)
+"
 }
 
-@test "help shows the examples of every command" {
+@test "the help fits in 80 columns, except default values, which are never split" {
+    local command
+    for command in "" config duplicate help import info list new open path remove rename run self-uninstall self-update templates version; do
+        run_pharo help $command
+        assert_success
+        run bash -c 'printf "%s\n" "$1" | awk "length > 80 && !/^ +Default: /"' _ "$output"
+        assert_output ""
+    done
     run_pharo help
-    assert_line "  pharo new 14 MyImage"
-    assert_line "      Create a Pharo 14 image named MyImage."
-    assert_line "  pharo run MyImage --eval '3 + 4'"
-    assert_line "  pharo config set imagesDir ~/Pharo/images"
+    assert_line "                      Default: https://files.pharo.org/pharo-launcher/sources.list"
+}
+
+@test "help shows every example as a comment above its command, separated by blank lines" {
+    run_pharo help
+    assert_output --partial "Examples:
+  # Keep new images in ~/Pharo/images.
+  pharo config set imagesDir ~/Pharo/images
+
+  # Pass --logLevel=4 to the VM every time.
+  pharo config set vmArgs --logLevel=4
+"
+    assert_output --partial "  # Print 7.
+  pharo run MyImage --eval '3 + 4'
+"
+}
+
+@test "commands without examples show no Examples section" {
+    run_pharo help version
+    assert_success
+    refute_output --partial "Examples:"
 }
 
 @test "help <command> shows usage, description, aliases, arguments, options and examples" {
@@ -37,7 +69,11 @@ setup() { sandbox_setup; }
     assert_line --regexp '^  -t, --template <template> +The template to create the image from\.$'
     assert_line --regexp '^  --no-open +Do not open the image once it is created\.$'
     assert_line --regexp '^  -h, --help +Show this help\.$'
-    assert_line "  pharo new latest MyImage --no-open"
+    assert_output --partial "Examples:
+  # Create an image from the stable Pharo release, with a generated name.
+  pharo new
+"
+    assert_line "  pharo new latest --no-open"
 }
 
 @test "help accepts aliases" {
@@ -79,4 +115,14 @@ setup() { sandbox_setup; }
     assert_output "  a-very-long-label-here
           Text.
   short   Text."
+}
+
+@test "long text wraps at word boundaries, aligned with its column, and long words are not split" {
+    run_lib 'HELP_WIDTH=30; help_row "key" "one two three four five six seven eight nine" 10; help_wrap "" 0 "a https://example.org/a/very/long/url/that/does/not/fit b"'
+    assert_output "  key     one two three four
+          five six seven eight
+          nine
+a
+https://example.org/a/very/long/url/that/does/not/fit
+b"
 }

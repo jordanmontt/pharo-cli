@@ -180,3 +180,12 @@ alias ll='ls -l'"
     assert_line "$HOME/.local/bin/pharo"
     assert_line "complete -F _pharo_cli_complete pharo"
 }
+
+@test "it records the links and the startup file for self-uninstall" {
+    run_installer PHARO_CLI_BIN_DIR="$SANDBOX/bin" PHARO_CLI_MAN_DIR="$SANDBOX/man" PHARO_CLI_RC_FILE="$SANDBOX/rc"
+    assert_success
+    run cat "$HOME/.pharo-cli/.installed"
+    assert_output "binLink=$SANDBOX/bin/pharo
+manLink=$SANDBOX/man/pharo.1
+rcFile=$SANDBOX/rc"
+}
