@@ -220,11 +220,13 @@ help_md() {
     printf '%s\n' "$1" | sed -e 's/</\&lt;/g' -e 's/>/\&gt;/g'
 }
 
-# The README command reference, in Markdown.
+# The command reference in docs/commands.md, in Markdown.
 help_markdown() {
-    local command line name description flags value key default aliases
+    local command line name description flags value aliases
+    printf '# Command reference\n\n'
+    printf 'Generated from the code by `scripts/gen-docs.sh`. The same help is in `%s help <command>` and `man %s`.\n\n' "$PHARO_CLI_COMMAND_NAME" "$PHARO_CLI_COMMAND_NAME"
     for command in $(registry_commands); do
-        printf '### `%s`\n\n' "$command"
+        printf '## `%s`\n\n' "$command"
         printf '```\n%s\n```\n\n' "$(registry_usage "$command")"
         help_md "$(registry_value "$command" summary)"
         while IFS= read -r line; do
@@ -257,7 +259,13 @@ EOF
         fi
         echo
     done
-    printf '### Settings\n\n'
+    printf '## Settings\n\n'
+    help_markdown_settings
+}
+
+# The settings table, in Markdown (in docs/commands.md and README.md).
+help_markdown_settings() {
+    local key default description
     printf 'Change them with `%s config set <key> <value>`, or with an environment variable `PHARO_CLI_<KEY>` (for example `PHARO_CLI_IMAGES_DIR`).\n\n' "$PHARO_CLI_COMMAND_NAME"
     printf '| Key | Default | Description |\n|---|---|---|\n'
     while IFS='|' read -r key default _ description; do

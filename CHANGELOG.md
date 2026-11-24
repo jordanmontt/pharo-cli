@@ -1,5 +1,16 @@
 # Changelog
 
+## Unreleased
+
+### Added
+
+- `pharo self-uninstall` removes pharo-cli, the `pharo` command, its man page and the block in your shell startup file, after asking. Images and settings are kept. The installer now records what it created in `~/.pharo-cli/.installed`; installs made by 2.0.0 are cleaned at the default locations.
+
+### Changed
+
+- The command reference moved from the README to [docs/commands.md](docs/commands.md), still generated from the code. The README is shorter, with a FAQ and sections on upgrading from 1.x and uninstalling.
+- `self-update` and the installer only refuse to update when tracked files were changed; untracked files no longer block them.
+
 ## 2.0.0
 
 A rewrite of pharo-cli: every command is a real command with arguments, the help and Tab completion are generated from the code, every default can be changed without editing the code, and images come from the same templates and VMs as Pharo Launcher instead of zeroconf. It runs on macOS and Linux with no dependency beyond `bash`, `curl` and `unzip`.

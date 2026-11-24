@@ -66,7 +66,7 @@ commands() {
     done
 }
 
-@test "the man page and the README reference are up to date" {
+@test "the man page, docs/commands.md and the README settings are up to date" {
     run "$PROJECT_ROOT/scripts/gen-docs.sh" --check
     assert_success
 }
