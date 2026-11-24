@@ -265,6 +265,18 @@ Print 7.
 .TP
 .B pharo run MyImage build.st
 Run the script build.st in MyImage.
+.SS "self\-uninstall"
+.B pharo self\-uninstall [options]
+.PP
+Remove pharo\-cli from this computer.
+.PP
+Removes the pharo\-cli folder, the pharo command and its man page, the block the installer added to your shell startup file, and the template cache. Your images and settings are kept.
+.TP
+.B \-y, \-\-yes
+Do not ask first.
+.TP
+.B pharo self\-uninstall
+Remove pharo\-cli, after you confirm.
 .SS "self\-update, up"
 .B pharo self\-update [options]
 .PP

@@ -90,6 +90,19 @@ has_command() {
     command -v "$1" >/dev/null 2>&1
 }
 
+# The physical path of the existing file or folder $1, with symlinked
+# folders resolved (on macOS, /var is /private/var). A relative $1 is taken
+# from the folder $2, or from the current folder.
+physical_path() {
+    local path="$1" dir
+    case "$path" in
+        /*) ;;
+        *) path="${2:-.}/$path" ;;
+    esac
+    dir=$(cd "$(dirname "$path")" 2>/dev/null && pwd -P) || return 1
+    printf '%s/%s\n' "$dir" "$(basename "$path")"
+}
+
 # Formats $1, seconds since the epoch, as "YYYY-MM-DD HH:MM". GNU date (Linux,
 # or coreutils first in PATH on macOS) takes -d @secs, BSD date takes -r secs;
 # the installed date decides, not the OS.
