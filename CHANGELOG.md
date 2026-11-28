@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 2.2.0
 
 pharo-cli now works the same for a person at a terminal and for a script or an agent ([#5](https://github.com/jordanmontt/pharo-cli/issues/5)).
 
