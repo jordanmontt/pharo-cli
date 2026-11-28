@@ -4,20 +4,34 @@
 # @alias ls
 # @summary List the images, most recently opened or created first.
 # @option -q --quiet Print only the image names, one per line.
+# @option --json Print a JSON array with one object per image, with the fields of 'pharo info --json' except size_bytes.
 # @example pharo list -q | Print only the names, for scripts.
 
 cmd_list() {
-    local quiet=false names name dir version last
+    local quiet=false json=false names name dir version last
     while [ $# -gt 0 ]; do
         case "$1" in
             -q | --quiet) quiet=true ;;
+            --json) json=true ;;
             *)
                 common_option list "$1" || check_argument_count list 0 1
                 ;;
         esac
         shift
     done
+    if [ "$quiet" = true ] && [ "$json" = true ]; then
+        usage_error "give either --quiet or --json, not both" list
+    fi
     names=$(images_list)
+    if [ "$json" = true ]; then
+        [ -z "$names" ] || while IFS= read -r name; do
+            info_json "$name" false
+        done <<NAMES | json_array
+$names
+NAMES
+        [ -n "$names" ] || echo "[]"
+        return "$EXIT_OK"
+    fi
     if [ -z "$names" ]; then
         [ "$quiet" = true ] && return "$EXIT_OK"
         info "No images in $(images_dir). Create one with '$PHARO_CLI_COMMAND_NAME new'."

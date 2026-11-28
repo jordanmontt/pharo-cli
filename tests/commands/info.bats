@@ -51,5 +51,28 @@ unknown"
 
 @test "an unknown image is an error" {
     run_pharo info Nope
-    assert_failure 1
+    assert_failure 3
+}
+
+@test "without a name and without a terminal it fails at once instead of waiting" {
+    run_pharo_without_terminal info
+    assert_failure 2
+    assert_output "pharo: no image given, and no terminal to choose one"
+}
+
+@test "--json prints the details as one JSON object" {
+    create_image Json
+    set_image_metadata Json "origin=14" "templateUrl=https://files.pharo.org/image/140/latest-64.zip" "created=0"
+    run_in_sandbox /bin/bash -c '"$1" info Json --json 2>/dev/null' _ "$PHARO_BIN"
+    assert_success
+    assert_output --regexp '^\{"name":"Json",.*\}$'
+    assert_json '[.name, .folder, .image_file, .pharo_version, .image_format, .vm_path, .template, .template_url, .created, .last_opened, (.size_bytes > 0)]' \
+        "[\"Json\",\"$IMAGES_DIR/Json\",\"Json.image\",\"14\",68021,\"$IMAGES_DIR/Json/pharo-vm/Pharo.app/Contents/MacOS/Pharo\",\"14\",\"https://files.pharo.org/image/140/latest-64.zip\",\"1970-01-01T00:00:00Z\",null,true]"
+}
+
+@test "--json gives null for what is not known" {
+    create_image Bare --no-vm --no-version
+    run_pharo info Bare --json
+    assert_success
+    assert_json '[.pharo_version, .vm_path, .template, .created, .last_opened]' '[null,null,null,null,null]'
 }

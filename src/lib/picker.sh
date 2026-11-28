@@ -20,9 +20,11 @@ picker_kind() {
 }
 
 # Lets the user choose one of the images and prints its name. The question
-# $1 is shown as the prompt. Exits with EXIT_ERROR when cancelled.
+# $1 is shown as the prompt. Exits with EXIT_ERROR when cancelled, and with
+# EXIT_USAGE when there is no terminal to choose in.
 pick_image() {
     local names choice
+    require_terminal "no image given, and no terminal to choose one"
     names=$(images_list)
     [ -n "$names" ] || die "no images in $(images_dir). Create one with '$PHARO_CLI_COMMAND_NAME new'"
     case "$(picker_kind)" in

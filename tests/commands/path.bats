@@ -20,6 +20,15 @@ setup() { sandbox_setup; }
 
 @test "an unknown image is an error" {
     run_pharo path Nope
-    assert_failure 1
+    assert_failure 3
     assert_output --partial "no image named 'Nope'"
+}
+
+@test "--json prints the path in a JSON object" {
+    create_image "My \"quoted\" image"
+    run_pharo path "My \"quoted\" image" --json
+    assert_success
+    assert_output "{\"path\":\"$IMAGES_DIR/My \\\"quoted\\\" image\"}"
+    run_pharo path --json
+    assert_json .path "\"$IMAGES_DIR\""
 }

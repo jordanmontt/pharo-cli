@@ -99,8 +99,8 @@ setup() { sandbox_setup; }
 }
 
 @test "commands without options show only -h" {
-    run_pharo help path
-    assert_line --index 0 "Usage: pharo path [<image>]"
+    run_pharo help rename
+    assert_line --index 0 "Usage: pharo rename [<image>] [<new-name>]"
     assert_line --regexp '^  -h, --help +Show this help\.$'
 }
 

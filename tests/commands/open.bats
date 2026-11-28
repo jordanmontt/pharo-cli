@@ -47,7 +47,7 @@ fake vm ran"
 
 @test "an unknown image is an error" {
     run_pharo open Nope
-    assert_failure 1
+    assert_failure 3
     assert_output --partial "no image named 'Nope' in $IMAGES_DIR"
 }
 
@@ -109,7 +109,7 @@ MyImage.image
 @test "--background runs the VM in the background with its output in pharo-cli.log" {
     run_pharo open MyImage --background
     assert_success
-    assert_output --regexp "^Opened 'MyImage' in the background \(process [0-9]+\)\. VM output goes to $IMAGES_DIR/MyImage/pharo-cli.log$"
+    assert_line --index 0 --regexp "^Opened 'MyImage' in the background \(process [0-9]+\)\. VM output goes to $IMAGES_DIR/MyImage/pharo-cli.log$"
     local i
     for i in 1 2 3 4 5 6 7 8 9 10; do
         [ -s "$IMAGES_DIR/MyImage/pharo-cli.log" ] && break
@@ -159,4 +159,59 @@ MyImage.image
 @test "too many names is a usage error" {
     run_pharo open MyImage Other
     assert_failure 2
+}
+
+@test "without a name and without a terminal it fails at once instead of waiting" {
+    run_pharo_without_terminal open
+    assert_failure 2
+    assert_output "pharo: no image given, and no terminal to choose one"
+}
+
+@test "--background prints the process id alone on stdout" {
+    run_in_sandbox /bin/bash -c '"$1" open MyImage --background 2>/dev/null' _ "$PHARO_BIN"
+    assert_success
+    assert_output --regexp '^[0-9]+$'
+}
+
+@test "--headless runs the image without its UI, in the foreground or the background" {
+    run_pharo open MyImage --headless
+    assert_success
+    assert_output "Opening 'MyImage'...
+fake vm ran"
+    run vm_last_arguments
+    assert_output "--headless
+MyImage.image
+--interactive"
+    write_config "vmArgs=--logLevel=2"
+    run_pharo open MyImage --headless --background --vm-arg --maxFramesToLog=1
+    assert_success
+    local i
+    for i in 1 2 3 4 5 6 7 8 9 10; do
+        [ -s "$IMAGES_DIR/MyImage/pharo-cli.log" ] && break
+        sleep 0.2
+    done
+    run vm_last_arguments
+    assert_output "--headless
+--logLevel=2
+--maxFramesToLog=1
+MyImage.image
+--interactive"
+    run cat "$IMAGES_DIR/MyImage/.pharo-cli"
+    assert_output --regexp '^lastOpened=[0-9]+$'
+}
+
+@test "-q and --quiet print only the VM's output, or the process id" {
+    run_pharo open MyImage -q
+    assert_success
+    assert_output "fake vm ran"
+    run_pharo open MyImage --quiet --background
+    assert_success
+    assert_output --regexp '^[0-9]+$'
+}
+
+@test "a VM that cannot start exits 5" {
+    printf '\177ELF\000\000\000\000' >"$IMAGES_DIR/MyImage/pharo-vm/Pharo.app/Contents/MacOS/Pharo"
+    run_pharo open MyImage
+    assert_failure 5
+    assert_output --partial "pharo: could not start the VM"
 }

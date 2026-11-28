@@ -64,17 +64,17 @@ setup() {
 
 @test "errors: missing source, folder without image, failed download, taken name" {
     run_pharo import "$SANDBOX/nope"
-    assert_failure 1
+    assert_failure 3
     assert_output --partial "no such folder or zip file"
     mkdir -p "$SANDBOX/empty"
     run_pharo import "$SANDBOX/empty"
     assert_failure 1
     assert_output --partial "no .image file in $SANDBOX/empty"
     run_pharo import https://example.org/missing.zip
-    assert_failure 1
+    assert_failure 4
     assert_output --partial "could not download https://example.org/missing.zip"
     run_pharo import "$SANDBOX/missing.zip"
-    assert_failure 1
+    assert_failure 3
     assert_output --partial "no such file"
     create_image MyProject
     run_pharo import "$SANDBOX/outside/MyProject"
@@ -87,4 +87,15 @@ setup() {
 @test "import needs a source" {
     run_pharo import
     assert_failure 2
+}
+
+@test "-q and --quiet print nothing but errors" {
+    run_pharo import "$SANDBOX/outside/MyProject" -q
+    assert_success
+    assert_output ""
+    run_pharo import "$SANDBOX/outside/MyProject" Other --quiet
+    assert_output ""
+    run_pharo import "$SANDBOX/nope" -q
+    assert_failure 3
+    assert_output "pharo: no such folder or zip file: $SANDBOX/nope"
 }

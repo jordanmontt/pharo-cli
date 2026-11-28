@@ -123,3 +123,11 @@ alias ll='ls -l'"
     assert_failure 2
     [ -f "$SANDBOX/dev-clone/bin/pharo" ]
 }
+
+@test "without a terminal it needs --yes and keeps everything" {
+    install_pharo_cli
+    run_in_sandbox PHARO_CLI_TEST_TTY= /bin/bash -c '"$1" self-uninstall </dev/null' _ "$HOME/.local/bin/pharo"
+    assert_failure 2
+    assert_output --partial "cannot ask \"Remove pharo-cli?\" without a terminal; pass --yes"
+    [ -f "$HOME/.pharo-cli/bin/pharo" ]
+}

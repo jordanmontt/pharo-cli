@@ -7,12 +7,13 @@
 # @arg [key:config-key] The setting, for get, set and unset.
 # @arg [value:config-value] The new value, for set.
 # @option -y --yes Do not ask before reset.
+# @option --json With list: print a JSON object with each setting's value and origin (default, file or env), and config_file.
 # @complete complete_config
 # @example pharo config set imagesDir ~/Pharo/images | Keep new images in ~/Pharo/images.
 # @example pharo config set vmArgs --logLevel=4 | Pass --logLevel=4 to the VM every time.
 
 cmd_config() {
-    local yes=false count=0 action="" key="" value="" reason
+    local yes=false json=false count=0 action="" key="" value="" reason
     while [ $# -gt 0 ]; do
         # The value of 'config set <key> <value>' is taken as it is, even
         # when it starts with a dash (vmArgs values do).
@@ -24,6 +25,7 @@ cmd_config() {
         fi
         case "$1" in
             -y | --yes) yes=true ;;
+            --json) json=true ;;
             *)
                 common_option config "$1" || {
                     count=$((count + 1))
@@ -37,10 +39,17 @@ cmd_config() {
         esac
         shift
     done
+    if [ "$json" = true ] && [ "${action:-list}" != list ]; then
+        usage_error "--json works only with 'config list'" config
+    fi
     case "${action:-list}" in
         list)
             check_argument_count config 1 "$count"
-            config_list
+            if [ "$json" = true ]; then
+                config_list_json
+            else
+                config_list
+            fi
             ;;
         get)
             check_argument_count config 2 "$count"
@@ -99,4 +108,22 @@ config_list() {
         printf '%s\t%s\t(%s)\n' "$key" "$(config_raw "$key")" "$origin"
     done | list_columns
     printf '\nConfig file: %s\n' "$(config_file)"
+}
+
+# Prints every setting with its value and origin as a JSON object. Whole
+# numbers and true/false are JSON numbers and booleans.
+config_list_json() {
+    local key type value
+    {
+        for key in $(config_keys); do
+            value=$(config_raw "$key")
+            type=string
+            case "$(config_field "$key" 3)" in
+                int) is_number "$value" && type=number ;;
+                bool) [ "$value" = true ] || [ "$value" = false ] && type=bool ;;
+            esac
+            json_field "$key" json "$({ json_field value "$type" "$value"; json_field origin string "$(config_origin "$key")"; } | json_object)"
+        done
+        json_field config_file string "$(config_file)"
+    } | json_object
 }

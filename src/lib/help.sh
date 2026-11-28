@@ -241,12 +241,36 @@ EOF
     echo '.I ~/.cache/pharo\-cli/sources.list'
     echo "Cached template list."
     echo ".TP"
+    echo '.I ~/.cache/pharo\-cli/downloads/'
+    echo "Cached template and VM zips (see cacheDownloads). Safe to delete; self\\-uninstall removes it."
+    echo ".TP"
     echo '.I <imagesDir>/<image>/'
     echo "One folder per image, with its image files, its VM in pharo\\-vm/ and pharo\\-cli metadata in .pharo\\-cli."
     echo ".SH EXIT STATUS"
-    echo "0 on success, 1 when a command fails or is cancelled, 2 for a wrong command line."
+    echo "These codes are stable: scripts can rely on them."
+    while IFS='|' read -r key description; do
+        echo ".TP"
+        printf '.B %s\n' "$key"
+        help_roff "$description"
+    done <<EOF
+$(help_exit_codes)
+EOF
     echo ".SH SEE ALSO"
     printf 'https://github.com/%s\n' "$PHARO_CLI_REPOSITORY"
+}
+
+# The exit codes, one "code|meaning" line each, for the man page and
+# docs/commands.md. They match the EXIT_* constants in core.sh.
+help_exit_codes() {
+    cat <<'EOF'
+0|Success.
+1|A command failed or was cancelled. For 'pharo run', the script or expression failed: the status is the VM's own.
+2|The command line was wrong, or a question needed a terminal (no image given, a confirmation without --yes).
+3|No such image, script or import source.
+4|A download failed.
+5|The VM could not be started.
+124|'pharo run --timeout' stopped the VM.
+EOF
 }
 
 # Escapes text for Markdown, where <word> would be read as an HTML tag.
@@ -295,6 +319,38 @@ EOF
     done
     printf '## Settings\n\n'
     help_markdown_settings
+    printf '\n## Exit status\n\n'
+    printf 'These codes are stable: scripts can rely on them.\n\n'
+    printf '| Code | Meaning |\n|---|---|\n'
+    while IFS='|' read -r key description; do
+        printf '| `%s` | %s |\n' "$key" "$(help_md "$description")"
+    done <<EOF
+$(help_exit_codes)
+EOF
+    help_markdown_scripts
+}
+
+# The section of docs/commands.md on using pharo-cli from scripts and agents.
+help_markdown_scripts() {
+    cat <<'EOF'
+
+## Scripts and agents
+
+pharo-cli works the same for a person and for a program:
+
+- **Nothing waits for an answer without a terminal.** When stdin or stderr is not a terminal, a command that would show the image list or ask a question fails at once with status 2: give the image name, or `--yes`.
+- **stdout carries only results**: names, paths, JSON, and the process id of `pharo open --background`. Progress and status messages go to stderr. Without a terminal, each download prints one line when it is done instead of a progress bar; `--quiet` prints nothing but errors and warnings.
+- **JSON.** `info`, `list`, `templates`, `config` and `path` take `--json`. Unknown values are `null`; dates are ISO 8601 in UTC.
+- **Headless runs.** `pharo run` passes the VM's exit status on. `--save` keeps what the script changed, `--timeout <seconds>` stops a script that hangs (status 124), and `--temporary <template>` runs in a fresh image that is removed afterwards, however the run ends.
+- **Downloads are cached** in `~/.cache/pharo-cli/downloads/` and downloaded again only when the server has a newer version, so temporary images are quick to make. The folder is safe to delete.
+
+Setting up an image that starts a server, for example an MCP server, takes two steps: a script that loads the code and registers the server to start when the image starts, saved into the image, then the image started without its UI:
+
+```bash
+pharo run MyServer setup.st --save
+pharo open MyServer --headless --background
+```
+EOF
 }
 
 # The settings table, in Markdown (in docs/commands.md and README.md).

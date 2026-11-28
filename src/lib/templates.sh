@@ -51,7 +51,7 @@ templates_ensure() {
         warn "could not download the template list; using the cached copy"
         return 0
     fi
-    die "could not download the template list from $(config_get templatesUrl)"
+    die_with "$EXIT_DOWNLOAD" "could not download the template list from $(config_get templatesUrl)"
 }
 
 # The template id for the template name $1.

@@ -94,6 +94,21 @@ setup() {
 
 @test "an unknown image is an error" {
     run_pharo remove Nope
-    assert_failure 1
+    assert_failure 3
     assert_output --partial "no image named 'Nope'"
+}
+
+@test "without a name and without a terminal it fails at once instead of waiting" {
+    run_pharo_without_terminal remove
+    assert_failure 2
+    assert_output "pharo: no image given, and no terminal to choose one"
+}
+
+@test "without a trash and without a terminal it needs --yes" {
+    export FAKE_OS=Linux FAKE_ARCH=x86_64
+    uninstall_fake gio trash-put
+    run_pharo_without_terminal remove Doomed
+    assert_failure 2
+    assert_output --partial "cannot ask \"Permanently delete 'Doomed'?\" without a terminal; pass --yes"
+    [ -d "$IMAGES_DIR/Doomed" ]
 }

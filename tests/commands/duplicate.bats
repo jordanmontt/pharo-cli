@@ -56,5 +56,11 @@ setup() { sandbox_setup; }
 
 @test "an unknown image is an error" {
     run_pharo duplicate Nope
-    assert_failure 1
+    assert_failure 3
+}
+
+@test "without a name and without a terminal it fails at once instead of waiting" {
+    run_pharo_without_terminal duplicate
+    assert_failure 2
+    assert_output "pharo: no image given, and no terminal to choose one"
 }

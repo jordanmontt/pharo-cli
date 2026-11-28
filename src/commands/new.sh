@@ -11,6 +11,8 @@
 # @option -n --name <name:none> The name of the new image.
 # @option --open Open the image once it is created (the default, see the autoOpenOnNew setting).
 # @option --no-open Do not open the image once it is created.
+# @option --refresh Download the template and the VM again, even when the cached copies are up to date.
+# @option -q --quiet Print nothing but errors and warnings.
 # @example pharo new | Create an image from the stable Pharo release, with a generated name.
 # @example pharo new 14 MyImage | Create MyImage from the newest Pharo 14 build.
 # @example pharo new latest --no-open | Create an image from the newest Pharo version, without opening it.
@@ -35,6 +37,8 @@ cmd_new() {
             --name=*) name="${1#--name=}" ;;
             --open) auto_open=true ;;
             --no-open) auto_open=false ;;
+            --refresh) http_refresh_downloads ;;
+            -q | --quiet) info_be_quiet ;;
             *)
                 common_option new "$1" || {
                     count=$((count + 1))
@@ -58,8 +62,7 @@ cmd_new() {
 
     create_staging
     info "Downloading $label: $url"
-    http_download "$url" "$CREATE_STAGING/template.zip" || die "could not download $url"
-    folder=$(create_unpack "$CREATE_STAGING/template.zip") || exit "$EXIT_ERROR"
+    folder=$(create_from_template "$url") || exit
     if [ -z "$name" ]; then
         version=$(image_pharo_version "$folder") || version=""
         name=$(new_default_name "$version" "$template")
@@ -71,7 +74,7 @@ cmd_new() {
     vm_install "$(image_path "$name")"
     info "Created the image '$name' in $(image_path "$name")"
     [ "$auto_open" = true ] || return "$EXIT_OK"
-    launch_open "$name" "$(config_get openMode)"
+    launch_open "$name" "$(config_get openMode)" ui
 }
 
 # Sets template and name (in cmd_new) from the $1 positional arguments $2

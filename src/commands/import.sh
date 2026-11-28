@@ -5,6 +5,7 @@
 # @description A folder is copied, not moved. The image keeps its file names. When the image has no VM and has a pharo.version file, its VM is downloaded.
 # @arg <source:file> A folder or .zip file containing a .image file, or the http(s) URL of such a zip.
 # @arg [name:none] The name of the image. Without it, the folder or zip name is used.
+# @option -q --quiet Print nothing but errors and warnings.
 # @example pharo import ~/Documents/Pharo/images/Moose | Copy an image from Pharo Launcher's images folder.
 # @example pharo import ~/Downloads/moose.zip Moose | Add the image in moose.zip, named Moose.
 # @example pharo import https://example.org/image.zip | Download a zip and add its image.
@@ -12,13 +13,18 @@
 cmd_import() {
     local source="" name="" count=0 folder target
     while [ $# -gt 0 ]; do
-        common_option import "$1" || {
-            count=$((count + 1))
-            case "$count" in
-                1) source="$1" ;;
-                2) name="$1" ;;
-            esac
-        }
+        case "$1" in
+            -q | --quiet) info_be_quiet ;;
+            *)
+                common_option import "$1" || {
+                    count=$((count + 1))
+                    case "$count" in
+                        1) source="$1" ;;
+                        2) name="$1" ;;
+                    esac
+                }
+                ;;
+        esac
         shift
     done
     check_argument_count import 2 "$count"
@@ -32,15 +38,15 @@ cmd_import() {
     case "$source" in
         http://* | https://*)
             info "Downloading $source"
-            http_download "$source" "$CREATE_STAGING/import.zip" || die "could not download $source"
+            http_download "$source" "$CREATE_STAGING/import.zip" || die_with "$EXIT_DOWNLOAD" "could not download $source"
             folder=$(create_unpack "$CREATE_STAGING/import.zip") || exit "$EXIT_ERROR"
             ;;
         *.zip)
-            [ -f "$source" ] || die "no such file: $source"
+            [ -f "$source" ] || die_with "$EXIT_NOT_FOUND" "no such file: $source"
             folder=$(create_unpack "$source") || exit "$EXIT_ERROR"
             ;;
         *)
-            [ -d "$source" ] || die "no such folder or zip file: $source"
+            [ -d "$source" ] || die_with "$EXIT_NOT_FOUND" "no such folder or zip file: $source"
             image_dir_valid "$source" || die "no .image file in $source"
             cp -Rp "$source" "$CREATE_STAGING/content" || die "could not copy $source"
             folder="$CREATE_STAGING/content"

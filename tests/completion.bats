@@ -64,6 +64,8 @@ rename"
     complete_line open --
     assert_output "--background
 --foreground
+--headless
+--quiet
 --vm-arg
 --help"
     complete_line new --no

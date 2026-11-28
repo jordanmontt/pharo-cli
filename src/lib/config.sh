@@ -21,6 +21,7 @@ picker|auto|enum:auto,fzf,select|How to choose an image when none is named: fzf,
 templatesUrl|https://files.pharo.org/pharo-launcher/sources.list|url|Template list in Pharo Launcher's sources.list format.
 templatesCacheTtl|86400|int|Seconds before the template list is downloaded again.
 filesServer|https://files.pharo.org|url|Server for Pharo images and VMs (set it to use a mirror).
+cacheDownloads|true|bool|Whether template and VM zips are kept in ~/.cache/pharo-cli/downloads, so that they are downloaded again only when the server has a newer one.
 EOF
 }
 

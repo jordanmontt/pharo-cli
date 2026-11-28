@@ -75,5 +75,16 @@ setup() { sandbox_setup; }
 
 @test "an unknown image is an error" {
     run_pharo rename Nope New
-    assert_failure 1
+    assert_failure 3
+}
+
+@test "without a terminal, a missing name fails at once instead of waiting" {
+    create_image Old
+    run_pharo_without_terminal rename Old
+    assert_failure 2
+    assert_output "pharo: no new name given, and no terminal to ask for one"
+    run_pharo_without_terminal rename
+    assert_failure 2
+    assert_output "pharo: no image given, and no terminal to choose one"
+    [ -d "$IMAGES_DIR/Old" ]
 }
