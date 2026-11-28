@@ -1,12 +1,20 @@
 #!/usr/bin/env bash
 # Fake curl: serves files from $FAKE_HTTP_ROOT/<host>/<path> instead of the
 # network, and records every URL in $FAKE_LOG/curl.log. A missing file is a
-# 404 (exit 22, like curl -f). file:// URLs are read from disk.
+# 404 (exit 22, like curl -f). file:// URLs are read from disk. With -z
+# <file>, nothing is written when the served file is not newer than <file>
+# (a 304 Not Modified, logged in $FAKE_LOG/curl.log as "304 <url>"); with -R
+# the output gets the served file's time. With $FAKE_CURL_PARTIAL, the
+# download breaks halfway: half the file is written and curl exits 18.
 output=""
 url=""
+since=""
+remote_time=false
 while [ $# -gt 0 ]; do
     case "$1" in
         -o) output="$2"; shift ;;
+        -z) since="$2"; shift ;;
+        -R) remote_time=true ;;
         -*) ;;
         *) url="$1" ;;
     esac
@@ -22,8 +30,20 @@ if [ ! -f "$source" ]; then
     echo "curl: (22) The requested URL returned error: 404" >&2
     exit 22
 fi
+if [ -n "$since" ] && [ -f "$since" ] && [ ! "$source" -nt "$since" ]; then
+    echo "304 $url" >>"$FAKE_LOG/curl.log"
+    exit 0
+fi
+if [ -n "${FAKE_CURL_PARTIAL:-}" ] && [ -n "$output" ]; then
+    size=$(wc -c <"$source")
+    head -c $((size / 2)) "$source" >"$output"
+    echo "curl: (18) transfer closed with outstanding read data remaining" >&2
+    exit 18
+fi
 if [ -n "$output" ]; then
     cat "$source" >"$output"
+    [ "$remote_time" = true ] && touch -r "$source" "$output"
 else
     cat "$source"
 fi
+exit 0

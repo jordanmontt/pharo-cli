@@ -45,9 +45,9 @@ image_check_name() {
     esac
 }
 
-# Dies unless the image named $1 exists.
+# Exits with EXIT_NOT_FOUND unless the image named $1 exists.
 image_require() {
-    image_exists "$1" || die "no image named '$1' in $(images_dir)"
+    image_exists "$1" || die_with "$EXIT_NOT_FOUND" "no image named '$1' in $(images_dir)"
 }
 
 # Dies when the folder for the image named $1 is already taken.

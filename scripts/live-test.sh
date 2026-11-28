@@ -11,7 +11,8 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 PHARO="$ROOT/bin/pharo"
 WORK=$(mktemp -d)
 export HOME="$WORK/home"
-mkdir -p "$HOME"
+export TMPDIR="$WORK/tmp"
+mkdir -p "$HOME" "$TMPDIR"
 unset XDG_CONFIG_HOME XDG_CACHE_HOME XDG_DATA_HOME
 for variable in $(env | sed -n 's/^\(PHARO_CLI_[A-Z_]*\)=.*/\1/p'); do unset "$variable"; done
 
@@ -68,6 +69,37 @@ if "$PHARO" run Live14 --eval '1/0' >/dev/null 2>&1; then
     exit 1
 fi
 echo "An error in the image gives a non-zero exit status."
+
+step "The download cache: files.pharo.org sends Last-Modified, so a cached zip is checked, not downloaded again"
+curl -fsSI https://files.pharo.org/image/140/latest-64.zip | grep -i '^last-modified:' ||
+    { echo "FAILED: files.pharo.org sends no Last-Modified header" >&2; exit 1; }
+output=$("$PHARO" new 14 LiveCached --no-open 2>&1) || { printf '%s\n' "$output"; echo "FAILED: new 14 LiveCached" >&2; exit 1; }
+printf '%s\n' "$output"
+case "$output" in
+    *"Unchanged since the last download; using the cached copy."*) ;;
+    *) echo "FAILED: the second image of Pharo 14 was downloaded again" >&2; exit 1 ;;
+esac
+
+step "pharo run --save, --timeout and --temporary"
+check "$PHARO" run Live14 --eval 'Smalltalk globals at: #PharoCliLiveTest put: 42' --save
+expect_output "42" "$PHARO" run Live14 --eval 'Smalltalk globals at: #PharoCliLiveTest ifAbsent: [ 0 ]'
+printf "Smalltalk globals at: #PharoCliLiveScript put: 7.\n" >"$WORK/save.st"
+check "$PHARO" run Live14 "$WORK/save.st" --save
+expect_output "7" "$PHARO" run Live14 --eval 'Smalltalk globals at: #PharoCliLiveScript ifAbsent: [ 0 ]'
+check "$PHARO" run Live14 --eval 'Smalltalk globals at: #PharoCliUnsaved put: 1'
+expect_output "0" "$PHARO" run Live14 --eval 'Smalltalk globals at: #PharoCliUnsaved ifAbsent: [ 0 ]'
+"$PHARO" run Live14 --eval '(Delay forSeconds: 120) wait' --timeout 10
+status=$?
+[ "$status" -eq 124 ] || { echo "FAILED: a hanging run exited $status, not 124" >&2; exit 1; }
+echo "A hanging run was stopped with status 124."
+expect_output "from a script" "$PHARO" run --temporary 14 "$WORK/script.st"
+[ -z "$(ls -A "$TMPDIR")" ] || { echo "FAILED: the temporary image was left in $TMPDIR" >&2; exit 1; }
+echo "The temporary image was removed."
+
+step "pharo open --headless --background"
+pid=$("$PHARO" open LiveStable --headless --background) || { echo "FAILED: open --headless --background" >&2; exit 1; }
+echo "Process $pid"
+stop_after "$pid" 5
 
 step "pharo open: foreground and background, with VM arguments (headless, so no window opens)"
 "$PHARO" open Live14 --vm-arg --headless --vm-arg --logLevel=2 &

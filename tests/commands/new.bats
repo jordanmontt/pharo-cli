@@ -158,7 +158,7 @@ pharo.version"
 
 @test "a missing template download is an error and leaves nothing behind" {
     run_pharo new 99 Name
-    assert_failure 1
+    assert_failure 4
     assert_output --partial "could not download https://files.pharo.org/image/990/latest-64.zip"
     run ls -A "$IMAGES_DIR"
     assert_output ""
@@ -221,4 +221,97 @@ pharo.version"
     run_pharo new 14 Img --no-open
     assert_success
     [ -f "$HOME/elsewhere/images/Img/Img.image" ]
+}
+
+@test "the template and VM zips are cached, and downloaded again only when the server has newer ones" {
+    run_pharo new 14 First --no-open
+    assert_success
+    [ -f "$HOME/.cache/pharo-cli/downloads/https___files.pharo.org_image_140_latest-64.zip" ]
+    [ -f "$HOME/.cache/pharo-cli/downloads/https___files.pharo.org_get-files_140_pharo-vm-Darwin-arm64-stable.zip" ]
+    : >"$FAKE_LOG/curl.log"
+    run_pharo new 14 Second --no-open
+    assert_success
+    assert_output --partial "Unchanged since the last download; using the cached copy."
+    [ -f "$IMAGES_DIR/Second/Second.image" ]
+    [ -x "$IMAGES_DIR/Second/pharo-vm/Pharo.app/Contents/MacOS/Pharo" ]
+    run grep -c '^304 ' "$FAKE_LOG/curl.log"
+    assert_output 2
+    # A newer template on the server is downloaded again.
+    touch -t 203001010000 "$FAKE_HTTP_ROOT/files.pharo.org/image/140/latest-64.zip"
+    : >"$FAKE_LOG/curl.log"
+    run_pharo new 14 Third --no-open
+    assert_success
+    run grep -c '^304 ' "$FAKE_LOG/curl.log"
+    assert_output 1
+}
+
+@test "--refresh downloads the template and the VM again" {
+    run_pharo new 14 First --no-open
+    : >"$FAKE_LOG/curl.log"
+    run_pharo new 14 Second --no-open --refresh
+    assert_success
+    refute_output --partial "using the cached copy"
+    run grep -c '^304 ' "$FAKE_LOG/curl.log"
+    assert_output 0
+}
+
+@test "a cached zip is used, with a warning, when the server cannot be reached" {
+    run_pharo new 14 First --no-open
+    rm -rf "$FAKE_HTTP_ROOT/files.pharo.org/image/140"
+    run_pharo new 14 Second --no-open
+    assert_success
+    assert_output --partial "pharo: warning: could not download https://files.pharo.org/image/140/latest-64.zip; using the cached copy"
+    [ -f "$IMAGES_DIR/Second/Second.image" ]
+}
+
+@test "cacheDownloads=false keeps no copy" {
+    write_config "cacheDownloads=false"
+    run_pharo new 14 First --no-open
+    assert_success
+    [ ! -e "$HOME/.cache/pharo-cli/downloads" ]
+    run ls -A "$IMAGES_DIR/First"
+    refute_output --partial ".zip"
+}
+
+@test "without a terminal each download prints one line when it is done, and -q or --quiet prints nothing" {
+    run_in_sandbox PHARO_CLI_TEST_TTY= "$PHARO_BIN" new 14 First --no-open
+    assert_success
+    assert_line "Downloading Pharo 14: https://files.pharo.org/image/140/latest-64.zip"
+    assert_line --regexp '^Downloaded [0-9]+ B in [0-9]+s\.$'
+    run_in_sandbox PHARO_CLI_TEST_TTY= "$PHARO_BIN" new 14 Second --no-open --refresh -q
+    assert_success
+    assert_output ""
+    run_in_sandbox PHARO_CLI_TEST_TTY= "$PHARO_BIN" new 14 Third --no-open --quiet
+    assert_output ""
+}
+
+@test "status messages go to stderr, so stdout stays empty" {
+    run_in_sandbox /bin/bash -c '"$1" new 14 First --no-open 2>/dev/null' _ "$PHARO_BIN"
+    assert_success
+    assert_output ""
+}
+
+@test "a download that breaks halfway leaves the cache as it was" {
+    local cache="$HOME/.cache/pharo-cli/downloads/https___files.pharo.org_image_140_latest-64.zip"
+    # Nothing cached yet: the command fails and nothing is cached.
+    export FAKE_CURL_PARTIAL=1
+    run_pharo new 14 First --no-open
+    assert_failure 4
+    run ls -A "$HOME/.cache/pharo-cli/downloads"
+    assert_output ""
+    # A cached copy, then a newer zip on the server whose download breaks:
+    # the cached copy is used, unchanged, and no partial file is left.
+    unset FAKE_CURL_PARTIAL
+    run_pharo new 14 First --no-open
+    assert_success
+    cp "$cache" "$SANDBOX/cached.zip"
+    touch -t 203001010000 "$FAKE_HTTP_ROOT/files.pharo.org/image/140/latest-64.zip"
+    export FAKE_CURL_PARTIAL=1
+    run_pharo new 14 Second --no-open
+    assert_success
+    assert_output --partial "pharo: warning: could not download https://files.pharo.org/image/140/latest-64.zip; using the cached copy"
+    cmp "$cache" "$SANDBOX/cached.zip"
+    run ls -A "$HOME/.cache/pharo-cli/downloads"
+    refute_output --partial ".tmp."
+    [ -f "$IMAGES_DIR/Second/Second.image" ]
 }

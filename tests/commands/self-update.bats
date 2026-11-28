@@ -40,6 +40,11 @@ publish() {
     assert_output "Updated pharo-cli from 1.0.0 to 1.1.0."
     run_in_sandbox "$SANDBOX/install/bin/pharo" self-update
     assert_output "pharo-cli 1.1.0 is up to date."
+    run_in_sandbox "$SANDBOX/install/bin/pharo" self-update -q
+    assert_success
+    assert_output ""
+    run_in_sandbox "$SANDBOX/install/bin/pharo" self-update --quiet
+    assert_output ""
 }
 
 @test "tags are compared as versions (v1.10.0 is newer than v1.9.0)" {
@@ -101,10 +106,10 @@ publish() {
     cp -R "$PROJECT_ROOT/bin" "$PROJECT_ROOT/src" "$SANDBOX/install/"
     echo 1.0.0 >"$SANDBOX/install/VERSION"
     run_in_sandbox "$SANDBOX/install/bin/pharo" self-update
-    assert_failure 1
+    assert_failure 4
     assert_output --partial "could not find the newest release"
     run_in_sandbox "$SANDBOX/install/bin/pharo" self-update --main
-    assert_failure 1
+    assert_failure 4
     assert_output --partial "could not download https://github.com/jordanmontt/pharo-cli/archive/refs/heads/main.tar.gz"
     run cat "$SANDBOX/install/VERSION"
     assert_output 1.0.0

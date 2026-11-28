@@ -3,6 +3,7 @@
 # @alias up
 # @summary Update pharo-cli to its newest release.
 # @option --main Update to the newest development version (the main branch) instead.
+# @option -q --quiet Print nothing but errors and warnings.
 # @example pharo self-update --main | Try the development version (the main branch).
 
 cmd_self_update() {
@@ -10,6 +11,7 @@ cmd_self_update() {
     while [ $# -gt 0 ]; do
         case "$1" in
             --main) channel=main ;;
+            -q | --quiet) info_be_quiet ;;
             *) common_option self-update "$1" || check_argument_count self-update 0 1 ;;
         esac
         shift
@@ -54,7 +56,7 @@ self_update_archive() {
     else
         tag=$(http_get "https://api.github.com/repos/$PHARO_CLI_REPOSITORY/releases/latest" |
             sed -n 's/.*"tag_name"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' | sed -n 1p)
-        [ -n "$tag" ] || die "could not find the newest release"
+        [ -n "$tag" ] || die_with "$EXIT_DOWNLOAD" "could not find the newest release"
         url="https://github.com/$PHARO_CLI_REPOSITORY/archive/refs/tags/$tag.tar.gz"
     fi
     tmp=$(mktemp -d) || die "cannot create a temporary folder"
@@ -63,7 +65,7 @@ self_update_archive() {
         ! tar -xzf "$tmp/pharo-cli.tar.gz" -C "$tmp/pharo-cli" --strip-components 1 ||
         [ ! -f "$tmp/pharo-cli/bin/pharo" ]; then
         rm -rf "$tmp"
-        die "could not download $url"
+        die_with "$EXIT_DOWNLOAD" "could not download $url"
     fi
     cp -R "$tmp/pharo-cli/." "$root/" || {
         rm -rf "$tmp"

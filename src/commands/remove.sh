@@ -21,7 +21,7 @@ cmd_remove() {
         shift
     done
     check_argument_count remove 1 "$count"
-    [ -n "$name" ] || name=$(pick_image "Remove") || exit "$EXIT_ERROR"
+    [ -n "$name" ] || name=$(pick_image "Remove") || exit
     image_require "$name"
     dir=$(image_path "$name")
     if os_has_trash; then

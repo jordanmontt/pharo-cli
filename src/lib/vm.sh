@@ -29,14 +29,14 @@ vm_url() {
     fi
 }
 
-# Downloads the URL $1 and unzips it into the directory $2.
+# Downloads the URL $1 (through the download cache) and unzips it into the
+# directory $2.
 vm_fetch() {
     local url="$1" target="$2" zip
-    zip="$target.zip"
-    http_download "$url" "$zip" || { rm -f "$zip"; return 1; }
+    zip=$(http_fetch_zip "$url" "$target.zip") || { rm -f "$target.zip"; return 1; }
     mkdir -p "$target" && unzip -q -o "$zip" -d "$target"
     local status=$?
-    rm -f "$zip"
+    rm -f "$target.zip"
     return $status
 }
 
@@ -59,5 +59,5 @@ vm_install() {
         vm_fetch "$url" "$dir/pharo-vm" && return 0
     fi
     rm -rf "$dir/pharo-vm"
-    die "could not download a VM for Pharo $version"
+    die_with "$EXIT_DOWNLOAD" "could not download a VM for Pharo $version"
 }

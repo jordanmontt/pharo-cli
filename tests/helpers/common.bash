@@ -35,8 +35,15 @@ sandbox_setup() {
     done
 
     export FAKE_OS=Darwin FAKE_ARCH=arm64
+    # Tests run without a terminal; this makes pharo-cli behave as if it had
+    # one (pickers, questions, progress bars). Tests of what happens without
+    # a terminal clear it: run_pharo_without_terminal.
+    export PHARO_CLI_TEST_TTY=1
     export FAKE_HTTP_ROOT="$SANDBOX/http"
     export FAKE_LOG="$SANDBOX/log"
+    # Temporary files and images (pharo run --temporary) stay in the sandbox.
+    export TMPDIR="$SANDBOX/tmp"
+    mkdir -p "$TMPDIR"
     export FAKE_TRASH="$SANDBOX/trash"
     mkdir -p "$FAKE_HTTP_ROOT" "$FAKE_LOG"
     : >"$FAKE_LOG/curl.log"
@@ -74,7 +81,7 @@ uninstall_fake() {
 
 # Variables passed into the sandbox; everything else is left out, so the
 # developer's environment (ZDOTDIR, XDG_*, PHARO_CLI_*...) cannot leak in.
-SANDBOX_VARIABLES="HOME FAKE_OS FAKE_ARCH FAKE_HTTP_ROOT FAKE_LOG FAKE_TRASH FAKE_FZF_CHOICE FAKE_VM_EXIT TZ GIT_AUTHOR_NAME GIT_AUTHOR_EMAIL GIT_COMMITTER_NAME GIT_COMMITTER_EMAIL GIT_CONFIG_GLOBAL GIT_CONFIG_NOSYSTEM"
+SANDBOX_VARIABLES="HOME TMPDIR PHARO_CLI_TEST_TTY FAKE_OS FAKE_ARCH FAKE_HTTP_ROOT FAKE_LOG FAKE_TRASH FAKE_FZF_CHOICE FAKE_VM_EXIT FAKE_VM_SLEEP FAKE_VM_IGNORE_TERM FAKE_CURL_PARTIAL TZ GIT_AUTHOR_NAME GIT_AUTHOR_EMAIL GIT_COMMITTER_NAME GIT_COMMITTER_EMAIL GIT_CONFIG_GLOBAL GIT_CONFIG_NOSYSTEM"
 
 # Prints "env -i NAME=value..." arguments for a clean sandbox environment,
 # with PATH set to the sandbox PATH.
@@ -103,6 +110,12 @@ run_in_sandbox() {
 # Runs pharo in the sandbox.
 run_pharo() {
     run_in_sandbox "$PHARO_BIN" "$@"
+}
+
+# Runs pharo in the sandbox as an agent or a script would: no terminal, and
+# stdin closed.
+run_pharo_without_terminal() {
+    run_in_sandbox PHARO_CLI_TEST_TTY= /bin/bash -c '"$@" </dev/null' _ "$PHARO_BIN" "$@"
 }
 
 # Runs pharo in the sandbox with the text $1 on stdin.
@@ -148,4 +161,51 @@ vm_last_folder() {
 write_config() {
     mkdir -p "$HOME/.config/pharo-cli"
     printf '%s\n' "$@" >"$HOME/.config/pharo-cli/config"
+}
+
+# Runs the jq filter $1 on $output, which must be valid JSON, and checks that
+# it prints $2. jq runs outside the sandbox: pharo-cli does not need it. The
+# test is skipped where jq is not installed. $output is kept, so checks can
+# follow each other.
+assert_json() {
+    local json="$output"
+    command -v jq >/dev/null || skip "jq is not installed"
+    run jq -c "$1" <<<"$json"
+    assert_success
+    assert_output "$2"
+    output="$json"
+}
+
+# Succeeds when no process runs exactly the command line $1 (for example
+# "sleep 47"), waiting up to 2 seconds for processes that are stopping. ps
+# runs outside the sandbox.
+assert_no_process() {
+    local i
+    for i in 1 2 3 4 5 6 7 8 9 10; do
+        ps -A -o args= | grep -x -- "$1" >/dev/null || return 0
+        sleep 0.2
+    done
+    fail "still running: $1"
+}
+
+# Runs the Bash code $1 in the sandbox inside a pseudo-terminal (script(1)),
+# without PHARO_CLI_TEST_TTY: stdin, stdout and stderr are a real terminal,
+# and stdin ends at once. $PHARO is pharo-cli. The output loses the \r of
+# the terminal and the "^D" and backspaces that macOS's script echoes when
+# its input ends.
+# Skipped where script is not installed. macOS (BSD) and Linux (util-linux)
+# take different arguments.
+run_in_terminal() {
+    local code="$1" script_bin line
+    script_bin=$(command -v script) || skip "script is not installed"
+    if "$script_bin" --version 2>/dev/null | grep util-linux >/dev/null; then
+        run_in_sandbox PHARO_CLI_TEST_TTY= PHARO="$PHARO_BIN" "$script_bin" -qec "/bin/bash -c $(printf '%q' "$code")" /dev/null </dev/null
+    else
+        run_in_sandbox PHARO_CLI_TEST_TTY= PHARO="$PHARO_BIN" "$script_bin" -q /dev/null /bin/bash -c "$code" </dev/null
+    fi
+    output=$(printf '%s' "$output" | tr -d '\r\010' | sed 's/\^D//g')
+    lines=()
+    while IFS= read -r line; do
+        lines[${#lines[@]}]="$line"
+    done <<<"$output"
 }

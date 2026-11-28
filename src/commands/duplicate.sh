@@ -19,7 +19,7 @@ cmd_duplicate() {
         shift
     done
     check_argument_count duplicate 2 "$count"
-    [ -n "$name" ] || name=$(pick_image "Duplicate") || exit "$EXIT_ERROR"
+    [ -n "$name" ] || name=$(pick_image "Duplicate") || exit
     image_require "$name"
     if [ -z "$new_name" ]; then
         while [ -e "$(image_path "$name-$counter")" ]; do

@@ -7,8 +7,12 @@
 
 # Exit codes
 readonly EXIT_OK=0
-readonly EXIT_ERROR=1   # a command failed or the user cancelled
-readonly EXIT_USAGE=2   # the command line was wrong
+readonly EXIT_ERROR=1     # a command failed or the user cancelled
+readonly EXIT_USAGE=2     # the command line was wrong, or a question needs a terminal
+readonly EXIT_NOT_FOUND=3 # no such image, script or import source
+readonly EXIT_DOWNLOAD=4  # a download failed
+readonly EXIT_VM=5        # the VM could not be started
+readonly EXIT_TIMEOUT=124 # 'pharo run --timeout' stopped the VM (as timeout(1))
 
 PHARO_CLI_COMMAND_NAME="pharo"
 PHARO_CLI_PROGRAM_NAME="pharo-cli"
@@ -18,9 +22,19 @@ PHARO_CLI_REPOSITORY="jordanmontt/pharo-cli"
 # separator; a tab would not do because `read` merges consecutive tabs).
 PHARO_CLI_SEP=$(printf '\037')
 
-# Prints an informational message on stdout.
+# True when --quiet was given: info prints nothing.
+PHARO_CLI_QUIET=false
+
+# Makes info print nothing, for --quiet.
+info_be_quiet() {
+    PHARO_CLI_QUIET=true
+}
+
+# Prints an informational message on stderr, so stdout carries only results
+# (names, paths, JSON). Nothing is printed with --quiet.
 info() {
-    printf '%s\n' "$*"
+    [ "$PHARO_CLI_QUIET" = true ] && return 0
+    printf '%s\n' "$*" >&2
 }
 
 # Prints a warning on stderr.
@@ -30,8 +44,13 @@ warn() {
 
 # Prints an error on stderr and exits with EXIT_ERROR.
 die() {
-    printf '%s: %s\n' "$PHARO_CLI_COMMAND_NAME" "$*" >&2
-    exit "$EXIT_ERROR"
+    die_with "$EXIT_ERROR" "$*"
+}
+
+# Prints the error $2 on stderr and exits with the status $1.
+die_with() {
+    printf '%s: %s\n' "$PHARO_CLI_COMMAND_NAME" "$2" >&2
+    exit "$1"
 }
 
 # Prints a usage error on stderr, points to the help, and exits with EXIT_USAGE.
@@ -46,6 +65,25 @@ usage_error() {
     exit "$EXIT_USAGE"
 }
 
+# Succeeds when stderr is a terminal. PHARO_CLI_TEST_TTY, set by the tests
+# only, makes it succeed without one.
+stderr_is_terminal() {
+    [ -n "${PHARO_CLI_TEST_TTY:-}" ] || [ -t 2 ]
+}
+
+# Succeeds when a person can answer a question: stdin and stderr (where
+# prompts and the picker are drawn) are both terminals. Agents and scripts
+# have neither.
+has_terminal() {
+    [ -n "${PHARO_CLI_TEST_TTY:-}" ] || { [ -t 0 ] && [ -t 2 ]; }
+}
+
+# Exits with EXIT_USAGE and the message $1 unless a person can answer a
+# question, so that nothing waits for an answer that never comes.
+require_terminal() {
+    has_terminal || die_with "$EXIT_USAGE" "$1"
+}
+
 # Prints a prompt on stderr (so stdout stays clean for scripts) and reads one
 # line from stdin into the variable named $2. Fails when stdin is closed.
 prompt() {
@@ -53,9 +91,11 @@ prompt() {
     IFS= read -r "$2"
 }
 
-# Asks a yes/no question. Succeeds only on an explicit y or yes.
+# Asks a yes/no question. Succeeds only on an explicit y or yes. Without a
+# terminal, exits with EXIT_USAGE: the command needs --yes.
 confirm() {
     local answer=""
+    require_terminal "cannot ask \"$1\" without a terminal; pass --yes"
     prompt "$1 [y/N]" answer || return 1
     case "$answer" in
         y | Y | yes | YES | Yes) return 0 ;;
@@ -108,6 +148,12 @@ physical_path() {
 # the installed date decides, not the OS.
 format_date() {
     date -d "@$1" '+%Y-%m-%d %H:%M' 2>/dev/null || date -r "$1" '+%Y-%m-%d %H:%M'
+}
+
+# Formats $1, seconds since the epoch, as ISO 8601 in UTC, for JSON:
+# 2026-11-27T14:05:09Z.
+format_iso_date() {
+    date -u -d "@$1" '+%Y-%m-%dT%H:%M:%SZ' 2>/dev/null || date -u -r "$1" '+%Y-%m-%dT%H:%M:%SZ'
 }
 
 # The version of pharo-cli, read from the VERSION file at the project root.

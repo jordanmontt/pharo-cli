@@ -85,3 +85,26 @@ Second"
     assert_failure
     assert_output --partial "no images in $IMAGES_DIR. Create one with 'pharo new'"
 }
+
+@test "with a real terminal the menu is shown, even when stdout is a pipe" {
+    write_config "picker=select"
+    # stdin ends at once, so the menu is cancelled: status 1, not the 2 of
+    # "no terminal".
+    run_in_terminal '"$PHARO" info; echo "status $?"'
+    assert_output --partial "Show (number):"
+    assert_output --partial "Operation cancelled."
+    assert_line "status 1"
+    run_in_terminal '"$PHARO" info | cat; echo "status ${PIPESTATUS[0]}"'
+    assert_output --partial "Show (number):"
+    assert_line "status 1"
+}
+
+@test "with a real terminal on only some streams, nothing is asked" {
+    write_config "picker=select"
+    run_in_terminal '"$PHARO" info </dev/null; echo "status $?"'
+    assert_output --partial "pharo: no image given, and no terminal to choose one"
+    assert_line "status 2"
+    run_in_terminal '"$PHARO" info 2>"$FAKE_LOG/err"; echo "status $?"; cat "$FAKE_LOG/err"'
+    assert_line "status 2"
+    assert_output --partial "pharo: no image given, and no terminal to choose one"
+}

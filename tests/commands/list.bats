@@ -44,3 +44,22 @@ With Space"
     run_pharo list extra
     assert_failure 2
 }
+
+@test "--json prints a JSON array, most recent first, without sizes" {
+    run_pharo list --json
+    assert_success
+    assert_output "[]"
+    create_image Old
+    set_image_metadata Old "lastOpened=1000"
+    create_image "New one"
+    set_image_metadata "New one" "lastOpened=2000"
+    run_in_sandbox /bin/bash -c '"$1" list --json 2>/dev/null' _ "$PHARO_BIN"
+    assert_success
+    assert_json '[.[] | [.name, .last_opened, has("size_bytes")]]' '[["New one","1970-01-01T00:33:20Z",false],["Old","1970-01-01T00:16:40Z",false]]'
+}
+
+@test "--quiet and --json together are a usage error" {
+    run_pharo list -q --json
+    assert_failure 2
+    assert_output --partial "give either --quiet or --json, not both"
+}

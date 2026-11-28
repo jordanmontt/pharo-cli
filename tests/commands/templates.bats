@@ -41,6 +41,16 @@ setup() {
 @test "--refresh fails when the list cannot be downloaded" {
     rm "$FAKE_HTTP_ROOT/files.pharo.org/pharo-launcher/sources.list"
     run_pharo templates --refresh
-    assert_failure 1
+    assert_failure 4
     assert_output --partial "could not download the template list"
+}
+
+@test "--json prints a JSON array of id, name and url" {
+    run_pharo templates pharo-14.0-64bit-stable --json
+    assert_success
+    assert_json '[.[] | keys] | unique' '[["id","name","url"]]'
+    assert_json '.[0].id' '"pharo-14.0-64bit-stable"'
+    run_pharo templates nothing-matches --json
+    assert_failure 1
+    assert_line --index 0 "[]"
 }

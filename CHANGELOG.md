@@ -1,5 +1,27 @@
 # Changelog
 
+## 2.2.0
+
+pharo-cli now works the same for a person at a terminal and for a script or an agent ([#5](https://github.com/jordanmontt/pharo-cli/issues/5)).
+
+### Added
+
+- `pharo run --save` saves the image after the script or expression.
+- `pharo run --timeout <seconds>` stops a VM that is still running after that time (TERM, then KILL 5 seconds later) and exits with status 124.
+- `pharo run --temporary <template> <script>` runs in a fresh image made from the template, in a temporary folder, and removes it when the run ends: on success, failure, timeout or when pharo is stopped.
+- `pharo open --headless` runs an image without its UI, in the foreground or the background, for example a server.
+- `--json` on `info`, `list`, `templates`, `config` and `path`. Unknown values are `null`; dates are ISO 8601 in UTC.
+- `--quiet` on `new`, `import`, `run`, `open` and `self-update` prints nothing but errors and warnings.
+- Template and VM zips are cached in `~/.cache/pharo-cli/downloads/` and downloaded again only when the server has a newer one (`curl -z`), or with `--refresh` on `new` and `run`. When the server can't be reached, the cached zip is used, with a warning. The `cacheDownloads` setting turns the cache off.
+- A [Scripts and agents](docs/commands.md#scripts-and-agents) section and the exit codes in the command reference and the man page.
+
+### Changed
+
+- **Without a terminal, nothing waits for an answer.** When stdin or stderr is not a terminal, the image picker, `rename`'s question for a new name and the confirmations of `remove`, `config reset` and `self-uninstall` fail at once with status 2 instead of waiting. `pharo info < /dev/null` used to wait forever.
+- **Exit codes say what failed**, and are documented as stable: 3 for a missing image, script or import source, 4 for a failed download, 5 for a VM that cannot start, 124 for a timeout. These were 1 before. For `pharo run`, 1 now always means that the script failed.
+- **Status messages go to stderr**, so stdout carries only results. `pharo open --background` prints the process id alone on stdout.
+- Without a terminal, a download prints one line when it is done instead of curl's progress bar, which filled logs with `#=#=#` fragments.
+
 ## 2.1.0
 
 ### Added

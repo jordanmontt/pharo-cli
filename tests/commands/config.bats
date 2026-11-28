@@ -140,3 +140,24 @@ setup() { sandbox_setup; }
     run_pharo config list extra
     assert_failure 2
 }
+
+@test "config reset without a terminal needs --yes" {
+    write_config "openMode=background"
+    run_pharo_without_terminal config reset
+    assert_failure 2
+    assert_output "pharo: cannot ask \"Reset every setting to its default?\" without a terminal; pass --yes"
+    [ -f "$HOME/.config/pharo-cli/config" ]
+}
+
+@test "config --json prints each value and origin, with typed numbers and booleans" {
+    write_config "openMode=background" "autoOpenOnNew=false"
+    run_in_sandbox PHARO_CLI_IMAGES_DIR=/somewhere /bin/bash -c '"$1" config --json 2>/dev/null' _ "$PHARO_BIN"
+    assert_success
+    assert_json '[.openMode, .autoOpenOnNew, .imagesDir, .templatesCacheTtl, .vmArgs, .config_file]' \
+        "[{\"value\":\"background\",\"origin\":\"file\"},{\"value\":false,\"origin\":\"file\"},{\"value\":\"/somewhere\",\"origin\":\"env\"},{\"value\":86400,\"origin\":\"default\"},{\"value\":null,\"origin\":\"default\"},\"$HOME/.config/pharo-cli/config\"]"
+    run_pharo config list --json
+    assert_success
+    run_pharo config get openMode --json
+    assert_failure 2
+    assert_output --partial "--json works only with 'config list'"
+}

@@ -2,9 +2,16 @@
 # Fake Pharo VM, packed into the VM zips the fake server serves. Records its
 # working folder and arguments in $FAKE_LOG/vm.log (one argument per line,
 # after a "--- <folder>" line), prints a marker and exits $FAKE_VM_EXIT.
+# With $FAKE_VM_SLEEP it hangs that many seconds first, like a script that
+# never ends; with $FAKE_VM_IGNORE_TERM it also ignores TERM.
 {
     echo "--- $PWD"
     for argument in "$@"; do echo "$argument"; done
 } >>"$FAKE_LOG/vm.log"
 echo "fake vm ran"
+if [ -n "${FAKE_VM_SLEEP:-}" ]; then
+    [ -n "${FAKE_VM_IGNORE_TERM:-}" ] && trap '' TERM
+    # exec: the signals reach the sleep itself, and nothing is left behind.
+    exec sleep "$FAKE_VM_SLEEP"
+fi
 exit "${FAKE_VM_EXIT:-0}"

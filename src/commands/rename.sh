@@ -19,9 +19,10 @@ cmd_rename() {
         shift
     done
     check_argument_count rename 2 "$count"
-    [ -n "$name" ] || name=$(pick_image "Rename") || exit "$EXIT_ERROR"
+    [ -n "$name" ] || name=$(pick_image "Rename") || exit
     image_require "$name"
     if [ "$count" -lt 2 ]; then
+        require_terminal "no new name given, and no terminal to ask for one"
         prompt "New name for '$name':" new_name || new_name=""
         [ -n "$new_name" ] || {
             info "Operation cancelled." >&2

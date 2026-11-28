@@ -23,6 +23,25 @@ create_staging() {
     trap create_cleanup EXIT
 }
 
+# Makes a fresh staging folder in CREATE_STAGING under $TMPDIR, for an image
+# that is not kept: it is removed on exit whatever happens. Call it directly,
+# like create_staging.
+create_temporary_staging() {
+    CREATE_STAGING=$(mktemp -d "${TMPDIR:-/tmp}/pharo-cli-run.XXXXXX") || die "cannot create a temporary folder"
+    trap create_cleanup EXIT
+}
+
+# Downloads the template zip at the URL $1 (through the download cache),
+# unpacks it into the staging folder and prints the folder that holds the
+# image. Exits with EXIT_DOWNLOAD when the download fails.
+create_from_template() {
+    local zip
+    zip=$(http_fetch_zip "$1" "$CREATE_STAGING/template.zip") ||
+        die_with "$EXIT_DOWNLOAD" "could not download $1"
+    create_unpack "$zip"
+    rm -f "$CREATE_STAGING/template.zip"
+}
+
 # Prints the folder holding the .image file inside the unpacked folder $1
 # (zips may have the files at the top or inside one folder).
 create_image_folder() {

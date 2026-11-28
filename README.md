@@ -64,6 +64,7 @@ Change them with `pharo config set <key> <value>`, or with an environment variab
 | `templatesUrl` | `https://files.pharo.org/pharo-launcher/sources.list` | Template list in Pharo Launcher's sources.list format. |
 | `templatesCacheTtl` | `86400` | Seconds before the template list is downloaded again. |
 | `filesServer` | `https://files.pharo.org` | Server for Pharo images and VMs (set it to use a mirror). |
+| `cacheDownloads` | `true` | Whether template and VM zips are kept in ~/.cache/pharo-cli/downloads, so that they are downloaded again only when the server has a newer one. |
 <!-- END GENERATED SETTINGS -->
 
 ## How images, templates and VMs work
@@ -85,7 +86,7 @@ Yes: `pharo import <folder>` copies an image folder into pharo-cli's images fold
 `pharo path` prints the folder. `pharo config set imagesDir <folder>` changes it; move existing image folders there yourself.
 
 **Why does every image have its own VM?**
-So that each image keeps the VM it was created with. Updating one image's VM, or creating an image of a newer Pharo, never breaks the others. The cost is some disk space per image.
+So that each image keeps the VM it was created with. Updating one image's VM, or creating an image of a newer Pharo, never breaks the others. The cost is some disk space per image. The VM zips are cached in `~/.cache/pharo-cli/downloads/`, so a new image of the same Pharo version does not download its VM again.
 
 **Why does `pharo list` show `?` for the Pharo version of some images?**
 These images have no `pharo.version` file, usually because an older pharo-cli made them with zeroconf. They still open with their own VM.
@@ -94,7 +95,10 @@ These images have no `pharo.version` file, usually because an older pharo-cli ma
 Use `--vm-arg` once per option, for example `pharo open MyImage --vm-arg --logLevel=4`. For options you always want, use `pharo config set vmArgs '<options>'`.
 
 **Does it work offline?**
-`open`, `run`, `list` and the other commands on existing images work offline. `new` needs the network to download the image, and its VM when needed. The template list is cached; when it can't be downloaded, an older copy is used, with a warning.
+`open`, `run`, `list` and the other commands on existing images work offline. The template list and the template and VM zips are cached in `~/.cache/pharo-cli/` (see the `cacheDownloads` setting); a cached zip is downloaded again only when the server has a newer one. When the server can't be reached, the cached copies are used, with a warning. The cache is safe to delete.
+
+**Can scripts and agents use it?**
+Yes. Without a terminal, nothing waits for an answer: a missing image name or confirmation fails at once with status 2. stdout carries only results, `info`, `list`, `templates`, `config` and `path` take `--json`, and `pharo run` has `--save`, `--timeout` and `--temporary`. The exit codes are documented and stable. See [Scripts and agents](docs/commands.md#scripts-and-agents).
 
 ## Upgrading from 1.x
 
